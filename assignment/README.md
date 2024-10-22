@@ -23,10 +23,6 @@
 
 Následující obrázky zobrazují wireframe aplikace.
 
-<style>
-#imgs img { max-height: 300px }
-</style>
-
 <div id="imgs" style="display:flex; flex-direction: row; gap: 1em; flex-wrap: wrap;" markdown="1">
 
 ![alt text](img/deal-add.png) 
