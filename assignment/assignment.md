@@ -24,6 +24,7 @@
 Následující obrázky zobrazují wireframe aplikace.
 
 <div style="display:flex; flex-direction: row; gap: 1em; flex-wrap: wrap;" markdown="1">
+
 ![alt text](img/deal-add.png) 
 ![alt text](img/deal-detail.png) 
 ![alt text](img/tournament-create.png) 
@@ -31,6 +32,7 @@ Následující obrázky zobrazují wireframe aplikace.
 ![alt text](img/tournament-edit.png) 
 ![alt text](img/tournamentlist-search.png) 
 ![alt text](img/tournamentlist.png)
+
 </div>
 
 Přechody mezi jednotlivými obrazovkami jsou následující:
