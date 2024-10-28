@@ -23,12 +23,16 @@
 
 Následující obrázky zobrazují wireframe aplikace.
 
+Wireframe lze také spustit jako ukázku (tzv. Figma prototype). Pro spuštění přejděte na [tento odkaz](https://www.figma.com/proto/k3PSpzlAXuX3KFgIziJnJN/bridge-notes?node-id=2-2&t=LZRXga6sTH0gn94S-1). Není vyžádováno žádné přihlášení, aplikace běží v prohlížeči. Klikáním na tlačítka se můžete pohybovat mezi jednotlivými obrazovkami.
+
+![all wireframes](img/wireframes.png)
+
 <div id="imgs" style="display:flex; flex-direction: row; gap: 1em; flex-wrap: wrap;" markdown="1">
 
 ![alt text](img/deal-add.png) ![alt text](img/deal-detail.png)
 ![alt text](img/tournament-create.png) ![alt text](img/tournament-detail.png)
 ![alt text](img/tournament-edit.png) ![alt text](img/tournamentlist-search.png)
-![alt text](img/tournamentlist.png)
+![alt text](img/tournament-list.png)
 
 </div>
 
