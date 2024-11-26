@@ -10,6 +10,6 @@ Bridž je karetní hra a sport. Více informací na [Wikipedii](https://cs.wikip
 
 ## Autoři
 
-- Patrik Trefil
+- [Patrik Trefil](https://www.patriktrefil.com/)
 - [Zdeněk Tomis](https://zdenektomis.eu)
 - Ondřej Kaštovský
