@@ -10,7 +10,7 @@
   - Vydražený závazek
   - Dosažený výsledek
   - Výnos
-  - Vlastní textová pozvánka
+  - Vlastní textová poznámka
 - Strukturování do turnajů: Uživatelé mohou vytvářet turnaje, do kterých
   zapisují jednotlivá rozdání. Turnaje obsahují následující informace:
   - Název
