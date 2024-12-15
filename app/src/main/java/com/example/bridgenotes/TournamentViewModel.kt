@@ -14,7 +14,7 @@ class TournamentViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.onStart { loadData() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-    
+
     private val _tournaments = MutableStateFlow(listOf<Tournament>())
     val tournaments = _tournaments.asStateFlow()
 
@@ -22,7 +22,7 @@ class TournamentViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _tournaments.update { _ ->
-                listOf(Tournament("Praha open 2012"), Tournament("Ostrava open 2013"))
+                List(20) { i -> Tournament("$i", "Tournament $i") }
             }
             _isLoading.value = false
         }
