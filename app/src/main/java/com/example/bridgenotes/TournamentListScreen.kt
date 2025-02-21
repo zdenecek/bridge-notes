@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
@@ -32,7 +33,9 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TournamentListScreen(
-    viewModel: TournamentViewModel, showTournamentDetail: (id: String) -> Unit
+    viewModel: TournamentViewModel, 
+    showTournamentDetail: (id: String) -> Unit,
+    onCreateTournament: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val tournaments by viewModel.tournaments.collectAsState()
@@ -66,7 +69,8 @@ fun TournamentListScreen(
             }
 
             FloatingActionButton(
-                onClick = { println("click") }, modifier = Modifier
+                onClick = onCreateTournament,
+                modifier = Modifier
                     .align(BottomEnd)
                     .padding(15.dp)
             ) {

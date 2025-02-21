@@ -22,11 +22,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = TournamentListScreenObj) {
                     composable<TournamentListScreenObj> {
-                        TournamentListScreen(viewModel) { tournamentId ->
-                            navController.navigate(
-                                TournamentDetailsScreenParams(tournamentId)
-                            )
-                        }
+                        TournamentListScreen(
+                            viewModel = viewModel,
+                            showTournamentDetail = { tournamentId ->
+                                navController.navigate(
+                                    TournamentDetailsScreenParams(tournamentId)
+                                )
+                            },
+                            onCreateTournament = {
+                                navController.navigate("create_tournament")
+                            }
+                        )
                     }
                     composable<TournamentDetailsScreenParams> {
                         val args = it.toRoute<TournamentDetailsScreenParams>()
@@ -78,6 +84,11 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         EditDealScreen(
                             dealId = backStackEntry.arguments?.getString("dealId") ?: "",
+                            onNavigateBack = { navController.navigateUp() }
+                        )
+                    }
+                    composable("create_tournament") {
+                        CreateTournamentScreen(
                             onNavigateBack = { navController.navigateUp() }
                         )
                     }

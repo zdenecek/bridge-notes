@@ -89,9 +89,15 @@ fun TournamentDetailsScreen(
                     Text("Odkaz na výsledky")
                     Text("https://vysledky.bkpraha.cz/prezentace/2024/cbt-praha...")
                     Spacer(Modifier.height(16.dp))
-                    
-                    Text("poznámka")
+
+                    Text("Pýr / Tým")
+                    Text("Kaštovský - Tomis za tým Trefil")
+                    Spacer(Modifier.height(16.dp))
+
+                    Text("Poznámka")
                     Text("Máma mele maso. Máma mele maso. Máma mele maso. Máma mele maso. Máma mele maso.")
+
+
                 }
             }
             
