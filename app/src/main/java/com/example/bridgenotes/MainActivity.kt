@@ -38,8 +38,11 @@ class MainActivity : ComponentActivity() {
                             },
                             onCreateDeal = {
                                 navController.navigate(
-                                    "create_deal/${args.id}"  // You'll need to define this route
+                                    "create_deal/${args.id}"
                                 )
+                            },
+                            onShowDealDetail = { dealId ->
+                                navController.navigate("deal_detail/$dealId")  // Navigate to deal detail
                             }
                         )
                     }
@@ -51,6 +54,30 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         CreateDealScreen(
                             tournamentId = backStackEntry.arguments?.getString("tournamentId") ?: "",
+                            onNavigateBack = { navController.navigateUp() }
+                        )
+                    }
+                    composable(
+                        route = "deal_detail/{dealId}",
+                        arguments = listOf(
+                            navArgument("dealId") { type = StringType }
+                        )
+                    ) { backStackEntry ->
+                        val dealId = backStackEntry.arguments?.getString("dealId") ?: ""
+                        DealDetailScreen(
+                            dealId = dealId,
+                            onNavigateBack = { navController.navigateUp() },
+                             onEdit = { navController.navigate("edit_deal/$dealId") }
+                        )
+                    }
+                    composable(
+                        route = "edit_deal/{dealId}",
+                        arguments = listOf(
+                            navArgument("dealId") { type = StringType }
+                        )
+                    ) { backStackEntry ->
+                        EditDealScreen(
+                            dealId = backStackEntry.arguments?.getString("dealId") ?: "",
                             onNavigateBack = { navController.navigateUp() }
                         )
                     }

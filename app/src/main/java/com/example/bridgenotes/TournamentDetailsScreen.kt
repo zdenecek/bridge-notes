@@ -33,7 +33,8 @@ fun TournamentDetailsScreen(
     tournamentId: String, 
     onNavigateUp: () -> Unit,
     onEditResult: (String) -> Unit = {},
-    onCreateDeal: () -> Unit = {}
+    onCreateDeal: () -> Unit = {},
+    onShowDealDetail: (String) -> Unit = {}
 ) {
     val mockResults = remember {
         listOf(
@@ -95,7 +96,7 @@ fun TournamentDetailsScreen(
             }
             
             items(mockResults) { result ->
-                ResultItem(result, onEditResult)
+                ResultItem(result, onEditResult, onShowDealDetail)
             }
         }
     }
@@ -104,11 +105,12 @@ fun TournamentDetailsScreen(
 @Composable
 private fun ResultItem(
     result: TournamentResult,
-    onEditResult: (String) -> Unit
+    onEditResult: (String) -> Unit,
+    onShowDealDetail: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .clickable { onEditResult(result.id) }
+            .clickable { onShowDealDetail(result.id) }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
