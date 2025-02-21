@@ -42,9 +42,6 @@ class MainActivity : ComponentActivity() {
                             onEditTournament = { tournamentId ->
                                 navController.navigate("edit_tournament/$tournamentId")
                             },
-                            onEditResult = { resultId -> 
-                                // TODO: Implement navigation to edit result screen
-                            },
                             onCreateDeal = {
                                 navController.navigate(
                                     "create_deal/${args.id}"

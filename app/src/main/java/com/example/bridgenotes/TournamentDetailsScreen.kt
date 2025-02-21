@@ -33,7 +33,6 @@ fun TournamentDetailsScreen(
     tournamentId: String, 
     onNavigateUp: () -> Unit,
     onEditTournament: (String) -> Unit,
-    onEditResult: (String) -> Unit = {},
     onCreateDeal: () -> Unit = {},
     onShowDealDetail: (String) -> Unit = {}
 ) {
@@ -103,7 +102,7 @@ fun TournamentDetailsScreen(
             }
             
             items(mockResults) { result ->
-                ResultItem(result, onEditResult, onShowDealDetail)
+                ResultItem(result, onShowDealDetail)
             }
         }
     }
@@ -112,7 +111,6 @@ fun TournamentDetailsScreen(
 @Composable
 private fun ResultItem(
     result: TournamentResult,
-    onEditResult: (String) -> Unit,
     onShowDealDetail: (String) -> Unit
 ) {
     Row(
