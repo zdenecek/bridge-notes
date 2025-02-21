@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.dp
 fun TournamentDetailsScreen(
     tournamentId: String, 
     onNavigateUp: () -> Unit,
-    onEditResult: (String) -> Unit = {}
+    onEditResult: (String) -> Unit = {},
+    onCreateDeal: () -> Unit = {}
 ) {
     val mockResults = remember {
         listOf(
@@ -68,7 +69,7 @@ fun TournamentDetailsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* Add new result */ }) {
+            FloatingActionButton(onClick = onCreateDeal) {
                 Text("+")
             }
         }
