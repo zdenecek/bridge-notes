@@ -39,6 +39,9 @@ class MainActivity : ComponentActivity() {
                         TournamentDetailsScreen(
                             tournamentId = args.id,
                             onNavigateUp = { navController.navigateUp() },
+                            onEditTournament = { tournamentId ->
+                                navController.navigate("edit_tournament/$tournamentId")
+                            },
                             onEditResult = { resultId -> 
                                 // TODO: Implement navigation to edit result screen
                             },
@@ -84,6 +87,17 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         EditDealScreen(
                             dealId = backStackEntry.arguments?.getString("dealId") ?: "",
+                            onNavigateBack = { navController.navigateUp() }
+                        )
+                    }
+                    composable(
+                        route = "edit_tournament/{tournamentId}",
+                        arguments = listOf(
+                            navArgument("tournamentId") { type = StringType }
+                        )
+                    ) { backStackEntry ->
+                        EditTournamentScreen(
+                            tournamentId = backStackEntry.arguments?.getString("tournamentId") ?: "",
                             onNavigateBack = { navController.navigateUp() }
                         )
                     }

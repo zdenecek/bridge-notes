@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 fun TournamentDetailsScreen(
     tournamentId: String, 
     onNavigateUp: () -> Unit,
+    onEditTournament: (String) -> Unit,
     onEditResult: (String) -> Unit = {},
     onCreateDeal: () -> Unit = {},
     onShowDealDetail: (String) -> Unit = {}
@@ -60,7 +61,7 @@ fun TournamentDetailsScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle edit */ }) {
+                    IconButton(onClick = { onEditTournament(tournamentId) }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit tournament"
