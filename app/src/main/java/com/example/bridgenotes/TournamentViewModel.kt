@@ -22,7 +22,7 @@ class TournamentViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _tournaments.update { _ ->
-                List(20) { i -> Tournament("$i", "Tournament $i") }
+                List(20) { i -> Tournament("$i", "Tournament $i", java.time.LocalDateTime.now(), "https://www.google.com", "Pair", "Note") }
             }
             _isLoading.value = false
         }

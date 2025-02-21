@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -89,12 +90,24 @@ private fun TournamentList(tournaments: List<Tournament>, showTournamentDetail: 
 @Composable
 private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: String) -> Unit) {
     Box(modifier = Modifier
-        .padding(0.dp, 5.dp)
-        .border(2.dp, Color.Gray)
-        .padding(10.dp, 15.dp)
+        .padding(horizontal = 16.dp, vertical = 4.dp)
         .fillMaxWidth()
-        .clickable { showTournamentDetail(tournament.id) }) {
-        Text(text = tournament.name)
+        .clickable { showTournamentDetail(tournament.id) }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = tournament.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = tournament.date.toLocalDate().toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
-
 }

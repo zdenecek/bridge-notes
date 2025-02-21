@@ -28,7 +28,13 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<TournamentDetailsScreenParams> {
                         val args = it.toRoute<TournamentDetailsScreenParams>()
-                        TournamentDetailsScreen(args.id) { navController.navigateUp() }
+                        TournamentDetailsScreen(
+                            tournamentId = args.id,
+                            onNavigateUp = { navController.navigateUp() },
+                            onEditResult = { resultId -> 
+                                // TODO: Implement navigation to edit result screen
+                            }
+                        )
                     }
                 }
             }
