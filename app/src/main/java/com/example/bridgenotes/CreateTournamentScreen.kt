@@ -29,11 +29,21 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import java.time.LocalDateTime
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
+fun CreateTournamentScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: TournamentViewModel
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    var name by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    var resultsLink by remember { mutableStateOf("") }
+    var pairTeam by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier
@@ -51,7 +61,26 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO: Implement save */ }) {
+                    IconButton(
+                        onClick = {
+                            val newTournament = Tournament(
+                                id = UUID.randomUUID().toString(),
+                                name = name,
+                                date = try {
+                                    LocalDateTime.parse(date)
+                                } catch (e: Exception) {
+                                    LocalDateTime.now()
+                                },
+                                resultsLink = resultsLink,
+                                pairOrTeam = pairTeam,
+                                note = note,
+                                deals = emptyList()
+                            )
+                            viewModel.createTournament(newTournament)
+                            onNavigateBack()
+                        },
+                        enabled = name.isNotBlank()
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = stringResource(R.string.save_changes)
@@ -67,12 +96,6 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            var name by remember { mutableStateOf("") }
-            var date by remember { mutableStateOf("") }
-            var resultsLink by remember { mutableStateOf("") }
-            var pairTeam by remember { mutableStateOf("") }
-            var note by remember { mutableStateOf("") }
-
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -116,4 +139,4 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
             )
         }
     }
-} 
+}

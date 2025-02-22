@@ -44,16 +44,17 @@ class MainActivity : ComponentActivity() {
                             },
                             onCreateDeal = {
                                 navController.navigate(
-                                    "create_deal/${args.id}"
+                                    "tournament/${args.id}/create_deal"
                                 )
                             },
                             onShowDealDetail = { dealId ->
-                                navController.navigate("deal_detail/$dealId")  // Navigate to deal detail
-                            }
+                                navController.navigate("tournament/${args.id}/deal/$dealId")
+                            },
+                            viewModel = viewModel
                         )
                     }
                     composable(
-                        route = "create_deal/{tournamentId}",
+                        route = "tournament/{tournamentId}/create_deal",
                         arguments = listOf(
                             navArgument("tournamentId") { type = StringType }
                         )
@@ -64,26 +65,32 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(
-                        route = "deal_detail/{dealId}",
+                        route = "tournament/{tournamentId}/deal/{dealId}",
                         arguments = listOf(
+                            navArgument("tournamentId") { type = StringType },
                             navArgument("dealId") { type = StringType }
                         )
                     ) { backStackEntry ->
                         val dealId = backStackEntry.arguments?.getString("dealId") ?: ""
+                        val tournamentId = backStackEntry.arguments?.getString("tournamentId") ?: ""
                         DealDetailScreen(
                             dealId = dealId,
                             onNavigateBack = { navController.navigateUp() },
-                             onEdit = { navController.navigate("edit_deal/$dealId") }
+                            onEdit = { navController.navigate("tournament/$tournamentId/deal/$dealId/edit") }
+                            , tournamentId = tournamentId
                         )
                     }
                     composable(
-                        route = "edit_deal/{dealId}",
+                        route = "tournament/{tournamentId}/deal/{dealId}/edit",
                         arguments = listOf(
+                            navArgument("tournamentId") { type = StringType },
                             navArgument("dealId") { type = StringType }
                         )
                     ) { backStackEntry ->
+                        val dealId = backStackEntry.arguments?.getString("dealId") ?: ""
                         EditDealScreen(
-                            dealId = backStackEntry.arguments?.getString("dealId") ?: "",
+                            dealId = dealId,
+                            tournamentId = backStackEntry.arguments?.getString("tournamentId") ?: "",
                             onNavigateBack = { navController.navigateUp() }
                         )
                     }
@@ -100,7 +107,8 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("create_tournament") {
                         CreateTournamentScreen(
-                            onNavigateBack = { navController.navigateUp() }
+                            onNavigateBack = { navController.navigateUp() },
+                            viewModel = viewModel
                         )
                     }
                 }

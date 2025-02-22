@@ -22,13 +22,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,18 +39,30 @@ fun TournamentListScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val tournaments by viewModel.tournaments.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    Scaffold(modifier = Modifier
-        .fillMaxSize()
-        .nestedScroll(scrollBehavior.nestedScrollConnection),
+    
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
                     Text(stringResource(R.string.tournament_list_title))
-                }, scrollBehavior = scrollBehavior
+                },
+                scrollBehavior = scrollBehavior
             )
-
-        }) { innerPadding ->
-
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onCreateTournament
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_tournament)
+                )
+            }
+        }
+    ) { innerPadding ->
         Box(
             Modifier
                 .fillMaxSize()
@@ -62,27 +72,17 @@ fun TournamentListScreen(
                 Box(
                     Modifier.fillMaxSize()
                 ) {
-                    if (isLoading) Text(
-                        text = stringResource(R.string.loading),
-                        Modifier.align(Center)
-                    ) else TournamentList(tournaments, showTournamentDetail)
+                    if (isLoading) {
+                        Text(
+                            text = stringResource(R.string.loading),
+                            Modifier.align(Center)
+                        )
+                    } else {
+                        TournamentList(tournaments, showTournamentDetail)
+                    }
                 }
-
-            }
-
-            FloatingActionButton(
-                onClick = onCreateTournament,
-                modifier = Modifier
-                    .align(BottomEnd)
-                    .padding(15.dp)
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.add_tournament)
-                )
             }
         }
-
     }
 }
 
@@ -101,12 +101,13 @@ private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: Str
     Box(modifier = Modifier
         .padding(horizontal = 16.dp, vertical = 4.dp)
         .fillMaxWidth()
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
         .clickable { showTournamentDetail(tournament.id) }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(16.dp)
         ) {
             Text(
                 text = tournament.name,
@@ -115,6 +116,11 @@ private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: Str
             Text(
                 text = tournament.date.toLocalDate().toString(),
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = tournament.pairOrTeam,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

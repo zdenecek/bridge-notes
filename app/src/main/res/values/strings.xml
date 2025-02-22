@@ -30,4 +30,5 @@
     <string name="deal_lead_label">Lead</string>
     <string name="deal_other_label">Other</string>
     <string name="edit_deal">Edit deal</string>
+    <string name="deals">Deals</string>
 </resources>
