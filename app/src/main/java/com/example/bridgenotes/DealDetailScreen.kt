@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,7 +20,7 @@ fun DealDetailScreen(dealId: String, onNavigateBack: () -> Unit, onEdit: () -> U
                     Column {
                         Text("Velká cena Prahy - 1. kolo", style = MaterialTheme.typography.titleSmall)
                         Text(
-                            "Rozdání č. $dealId",
+                            stringResource(R.string.deal_number, dealId),
                             
                         )
                     }
@@ -28,7 +29,7 @@ fun DealDetailScreen(dealId: String, onNavigateBack: () -> Unit, onEdit: () -> U
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
@@ -36,7 +37,7 @@ fun DealDetailScreen(dealId: String, onNavigateBack: () -> Unit, onEdit: () -> U
                     IconButton(onClick = onEdit) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit deal"
+                            contentDescription = stringResource(R.string.edit_deal)
                         )
                     }
                 }
@@ -50,12 +51,12 @@ fun DealDetailScreen(dealId: String, onNavigateBack: () -> Unit, onEdit: () -> U
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            LabeledField("Soupeři", "Tomis - Kaštovský")
-            LabeledField("Linka", "NS")
-            LabeledField("Závazek", "2NT E +1")
-            LabeledField("Poznámka", "Zdeněk to pokazil, musí vrátit ve třetím štychu piku, je to úplně evidentní.")
-            LabeledField("Výnos", "5♣")
-            LabeledField("Další pole", "lorem ipsum")
+            LabeledField(stringResource(R.string.deal_opponents_label), "Tomis - Kaštovský")
+            LabeledField(stringResource(R.string.deal_line_label), "NS")
+            LabeledField(stringResource(R.string.deal_contract_label), "2NT E +1")
+            LabeledField(stringResource(R.string.deal_note_label), "Zdeněk to pokazil, musí vrátit ve třetím štychu piku, je to úplně evidentní.")
+            LabeledField(stringResource(R.string.deal_lead_label), "5♣")
+            LabeledField(stringResource(R.string.deal_other_label), "lorem ipsum")
         }
     }
 }

@@ -3,9 +3,11 @@ package com.example.bridgenotes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,12 +25,12 @@ fun EditDealScreen(dealId: String, onNavigateBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Upravit rozdání") },
+                title = { Text(stringResource(R.string.edit_deal)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
@@ -37,7 +39,10 @@ fun EditDealScreen(dealId: String, onNavigateBack: () -> Unit) {
                         // TODO: Implement save
                         onNavigateBack()
                     }) {
-                        Text("✓")
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(R.string.save_changes)
+                        )
                     }
                 }
             )
@@ -53,35 +58,35 @@ fun EditDealScreen(dealId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = opponents,
                 onValueChange = { opponents = it },
-                label = { Text("Soupeři") },
+                label = { Text(stringResource(R.string.deal_opponents_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = contract,
                 onValueChange = { contract = it },
-                label = { Text("Závazek") },
+                label = { Text(stringResource(R.string.deal_contract_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = declarer,
                 onValueChange = { declarer = it },
-                label = { Text("Sehrávající") },
+                label = { Text(stringResource(R.string.deal_declarer_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = result,
                 onValueChange = { result = it },
-                label = { Text("Výsledek") },
+                label = { Text(stringResource(R.string.deal_result_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = score,
                 onValueChange = { score = it },
-                label = { Text("Skóre") },
+                label = { Text(stringResource(R.string.deal_score_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -89,7 +94,7 @@ fun EditDealScreen(dealId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Poznámka") },
+                label = { Text(stringResource(R.string.deal_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )

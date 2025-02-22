@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,7 @@ fun TournamentListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Tournament list")
+                    Text(stringResource(R.string.tournament_list_title))
                 }, scrollBehavior = scrollBehavior
             )
 
@@ -62,7 +63,8 @@ fun TournamentListScreen(
                     Modifier.fillMaxSize()
                 ) {
                     if (isLoading) Text(
-                        text = "Loading...", Modifier.align(Center)
+                        text = stringResource(R.string.loading),
+                        Modifier.align(Center)
                     ) else TournamentList(tournaments, showTournamentDetail)
                 }
 
@@ -74,7 +76,10 @@ fun TournamentListScreen(
                     .align(BottomEnd)
                     .padding(15.dp)
             ) {
-                Icon(Icons.Filled.Add, "Floating add button")
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_tournament)
+                )
             }
         }
 

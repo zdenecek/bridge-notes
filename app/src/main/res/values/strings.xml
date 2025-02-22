@@ -1,3 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bridge notes</string>
+    <string name="tournament_list_title">Tournament list</string>
+    <string name="loading">Loading...</string>
+    <string name="add_tournament">Add tournament</string>
+    <string name="tournament_date_label">Date</string>
+    <string name="tournament_results_link_label">Results Link</string>
+    <string name="tournament_pair_team_label">Pair / Team</string>
+    <string name="tournament_notes_label">Notes</string>
+    <string name="add_deal">Add deal</string>
+    <string name="edit_tournament">Edit tournament</string>
+    <string name="navigate_back">Go back</string>
+    <string name="save_changes">Save changes</string>
+    <string name="select_date">Select date</string>
+    <string name="tournament_name_label">Name</string>
+    <string name="new_tournament">New tournament</string>
+    <string name="new_deal">New deal</string>
+    <string name="deal_tournament_name_label">Tournament name</string>
+    <string name="deal_number_label">Deal number</string>
+    <string name="deal_opponents_label">Opponents</string>
+    <string name="deal_contract_label">Contract</string>
+    <string name="deal_declarer_label">Declarer</string>
+    <string name="deal_result_label">Result</string>
+    <string name="deal_score_label">Score</string>
+    <string name="deal_notes_label">Notes</string>
+    <string name="deal_number">Deal #%1$s</string>
+    <string name="deal_line_label">Line</string>
+    <string name="deal_note_label">Note</string>
+    <string name="deal_lead_label">Lead</string>
+    <string name="deal_other_label">Other</string>
+    <string name="edit_deal">Edit deal</string>
 </resources>

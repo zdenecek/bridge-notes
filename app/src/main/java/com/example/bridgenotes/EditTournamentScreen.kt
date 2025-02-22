@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +32,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
@@ -39,7 +40,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
                     IconButton(onClick = { /* Handle save */ }) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = "Save changes"
+                            contentDescription = stringResource(R.string.save_changes)
                         )
                     }
                 }
@@ -54,7 +55,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "MČR mixových párů 2024",
                 onValueChange = { /* TODO */ },
-                label = { Text("Název") },
+                label = { Text(stringResource(R.string.tournament_name_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -63,12 +64,12 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "11. 12. 2024",
                 onValueChange = { /* TODO */ },
-                label = { Text("Datum") },
+                label = { Text(stringResource(R.string.tournament_date_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select date"
+                        contentDescription = stringResource(R.string.select_date)
                     )
                 }
             )
@@ -78,7 +79,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "MČR mixových párů 2024",
                 onValueChange = { /* TODO */ },
-                label = { Text("Odkaz na výsledky") },
+                label = { Text(stringResource(R.string.tournament_results_link_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -87,7 +88,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "Kaštovský - Tomis",
                 onValueChange = { /* TODO */ },
-                label = { Text("Pár / Tým") },
+                label = { Text(stringResource(R.string.tournament_pair_team_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -96,7 +97,7 @@ fun EditTournamentScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "tento turnaj byl hrozně dlouhý",
                 onValueChange = { /* TODO */ },
-                label = { Text("Poznámka") },
+                label = { Text(stringResource(R.string.tournament_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )

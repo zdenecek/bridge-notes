@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +57,7 @@ fun TournamentDetailsScreen(
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
@@ -63,7 +65,7 @@ fun TournamentDetailsScreen(
                     IconButton(onClick = { onEditTournament(tournamentId) }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit tournament"
+                            contentDescription = stringResource(R.string.edit_tournament)
                         )
                     }
                 }
@@ -71,7 +73,10 @@ fun TournamentDetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateDeal) {
-                Text("+")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_deal)
+                )
             }
         }
     ) { innerPadding ->
@@ -82,22 +87,20 @@ fun TournamentDetailsScreen(
         ) {
             item {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Datum konání")
+                    Text(stringResource(R.string.tournament_date_label))
                     Text("19. 10. 2024")
                     Spacer(Modifier.height(16.dp))
                     
-                    Text("Odkaz na výsledky")
+                    Text(stringResource(R.string.tournament_results_link_label))
                     Text("https://vysledky.bkpraha.cz/prezentace/2024/cbt-praha...")
                     Spacer(Modifier.height(16.dp))
 
-                    Text("Pýr / Tým")
+                    Text(stringResource(R.string.tournament_pair_team_label))
                     Text("Kaštovský - Tomis za tým Trefil")
                     Spacer(Modifier.height(16.dp))
 
-                    Text("Poznámka")
+                    Text(stringResource(R.string.tournament_notes_label))
                     Text("Máma mele maso. Máma mele maso. Máma mele maso. Máma mele maso. Máma mele maso.")
-
-
                 }
             }
             

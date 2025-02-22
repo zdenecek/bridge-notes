@@ -41,18 +41,21 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text("Nový turnaj") },
+                title = { Text(stringResource(R.string.new_tournament)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { /* TODO: Implement save */ }) {
-                        Text("✓")
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(R.string.save_changes)
+                        )
                     }
                 }
             )
@@ -73,19 +76,19 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Název") },
+                label = { Text(stringResource(R.string.tournament_name_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = date,
                 onValueChange = { date = it },
-                label = { Text("Datum") },
+                label = { Text(stringResource(R.string.tournament_date_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     Icon(
                         Icons.Default.DateRange,
-                        contentDescription = "Select date"
+                        contentDescription = stringResource(R.string.select_date)
                     )
                 }
             )
@@ -93,21 +96,21 @@ fun CreateTournamentScreen(onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = resultsLink,
                 onValueChange = { resultsLink = it },
-                label = { Text("Odkaz na výsledky") },
+                label = { Text(stringResource(R.string.tournament_results_link_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = pairTeam,
                 onValueChange = { pairTeam = it },
-                label = { Text("Pár / Tým") },
+                label = { Text(stringResource(R.string.tournament_pair_team_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it },
-                label = { Text("Poznámka") },
+                label = { Text(stringResource(R.string.tournament_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )

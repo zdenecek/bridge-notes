@@ -6,9 +6,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Check
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,18 +26,21 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nové rozdání") },
+                title = { Text(stringResource(R.string.new_deal)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { /* TODO: Implement save */ }) {
-                        Text("✓")
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(R.string.save_changes)
+                        )
                     }
                 }
             )
@@ -51,7 +56,7 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = "MČR mixových párů 2024",
                 onValueChange = { },
-                label = { Text("Název turnaje") },
+                label = { Text(stringResource(R.string.deal_tournament_name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = false
             )
@@ -59,42 +64,42 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = dealNumber,
                 onValueChange = { dealNumber = it },
-                label = { Text("Číslo rozdání") },
+                label = { Text(stringResource(R.string.deal_number_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = opponents,
                 onValueChange = { opponents = it },
-                label = { Text("Soupeři") },
+                label = { Text(stringResource(R.string.deal_opponents_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = contract,
                 onValueChange = { contract = it },
-                label = { Text("Závazek") },
+                label = { Text(stringResource(R.string.deal_contract_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = declarer,
                 onValueChange = { declarer = it },
-                label = { Text("Sehrávající") },
+                label = { Text(stringResource(R.string.deal_declarer_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = result,
                 onValueChange = { result = it },
-                label = { Text("Výsledek") },
+                label = { Text(stringResource(R.string.deal_result_label)) },
                 modifier = Modifier.fillMaxWidth()
             )
             
             OutlinedTextField(
                 value = score,
                 onValueChange = { score = it },
-                label = { Text("Skóre") },
+                label = { Text(stringResource(R.string.deal_score_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -102,7 +107,7 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Poznámka") },
+                label = { Text(stringResource(R.string.deal_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
