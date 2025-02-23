@@ -6,8 +6,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,8 +26,23 @@ fun DealDetailScreen(
     onEdit: () -> Unit,
     viewModel: TournamentViewModel = viewModel()
 ) {
-    val tournament by viewModel.getTournamentById(tournamentId).collectAsState(initial = null)
-    val deal by viewModel.getDealById(tournamentId, dealId).collectAsState(initial = null)
+    LaunchedEffect(Unit) {
+        println("DealDetailScreen initial load")
+        viewModel.refreshTournaments()
+        viewModel.loadTournamentAndDeal(tournamentId, dealId)
+    }
+
+    val tournaments by viewModel.tournaments.collectAsState()
+    val tournament = tournaments.find { it.id == tournamentId }
+    val deal = tournament?.deals?.find { it.id == dealId }
+
+    LaunchedEffect(tournaments) {
+        println("DealDetailScreen state update")
+        println("Current tournaments state: ${tournaments.map { "${it.id}: ${it.deals.map { d -> d.id }}" }}")
+        println("Looking for deal: $dealId in tournament: $tournamentId")
+        println("Found tournament: ${tournament?.name}")
+        println("Tournament deals: ${tournament?.deals?.map { it.id }}")
+    }
 
     Scaffold(
         topBar = {
@@ -32,9 +50,11 @@ fun DealDetailScreen(
                 title = {
                     Column {
                         Text(tournament?.name ?: "", style = MaterialTheme.typography.titleSmall)
-                        Text(
-                            stringResource(R.string.deal_number, dealId),
-                        )
+                        deal?.let { currentDeal ->
+                            Text(
+                                text = "Deal #${currentDeal.dealNumber}",
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
@@ -46,36 +66,42 @@ fun DealDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onEdit) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.edit_deal)
-                        )
+                    if (deal != null) {
+                        IconButton(onClick = onEdit) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.edit_deal)
+                            )
+                        }
                     }
                 }
             )
         }
     ) { innerPadding ->
-        if (deal == null) {
-            Box(Modifier.fillMaxSize()) {
-                Text(
-                    text = stringResource(R.string.loading),
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (deal == null) {
+                CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                LabeledField(stringResource(R.string.deal_opponents_label), deal!!.opponents)
-                LabeledField(stringResource(R.string.deal_contract_label), "${deal!!.contract} ${deal!!.declarer}")
-                LabeledField(stringResource(R.string.deal_result_label), deal!!.result)
-                LabeledField(stringResource(R.string.deal_score_label), deal!!.score)
-                LabeledField(stringResource(R.string.deal_notes_label), deal!!.notes)
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    deal?.let { currentDeal ->
+                        LabeledField(stringResource(R.string.deal_opponents_label), currentDeal.opponents)
+                        LabeledField(stringResource(R.string.deal_contract_label), "${currentDeal.contract} ${currentDeal.declarer}")
+                        LabeledField(stringResource(R.string.deal_result_label), currentDeal.result)
+                        LabeledField(stringResource(R.string.deal_score_label), currentDeal.score)
+                        LabeledField(stringResource(R.string.deal_notes_label), currentDeal.notes)
+                    }
+                }
             }
         }
     }

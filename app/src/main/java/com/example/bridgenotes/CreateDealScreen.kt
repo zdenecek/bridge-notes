@@ -1,5 +1,6 @@
 package com.example.bridgenotes
 
+import Deal
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -11,10 +12,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Check
+import java.util.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.rememberCoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
+fun CreateDealScreen(
+    tournamentId: String, 
+    onNavigateBack: () -> Unit,
+    viewModel: TournamentViewModel
+) {
     var dealNumber by remember { mutableStateOf("") }
     var opponents by remember { mutableStateOf("") }
     var contract by remember { mutableStateOf("") }
@@ -22,6 +31,22 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
     var result by remember { mutableStateOf("") }
     var score by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+
+    val tournaments by viewModel.tournaments.collectAsState()
+    val tournament = tournaments.find { it.id == tournamentId }
+    val scope = rememberCoroutineScope()
+
+    // Add state tracking for the new deal
+    var createdDealId by remember { mutableStateOf<String?>(null) }
+
+    // Add effect to monitor deal creation
+    LaunchedEffect(createdDealId) {
+        if (createdDealId != null) {
+            delay(200) // Give time for state to update
+            println("Deal creation completed, navigating back")
+            onNavigateBack()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -36,7 +61,28 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO: Implement save */ }) {
+                    IconButton(
+                        onClick = {
+                            val newDeal = Deal(
+                                id = UUID.randomUUID().toString(),
+                                tournamentId = tournamentId,
+                                dealNumber = dealNumber,
+                                opponents = opponents,
+                                contract = contract,
+                                declarer = declarer,
+                                result = result,
+                                score = score,
+                                notes = notes
+                            )
+                            
+                            scope.launch {
+                                println("Creating new deal: ${newDeal.id}")
+                                viewModel.createDeal(tournamentId, newDeal)
+                                createdDealId = newDeal.id // Set the ID after creation
+                            }
+                        },
+                        enabled = true
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = stringResource(R.string.save_changes)
@@ -54,7 +100,7 @@ fun CreateDealScreen(tournamentId: String, onNavigateBack: () -> Unit) {
         ) {
             // Tournament name (uneditable)
             OutlinedTextField(
-                value = "MČR mixových párů 2024",
+                value = tournament?.name ?: "",
                 onValueChange = { },
                 label = { Text(stringResource(R.string.deal_tournament_name_label)) },
                 modifier = Modifier.fillMaxWidth(),

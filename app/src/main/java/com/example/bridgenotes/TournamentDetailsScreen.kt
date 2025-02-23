@@ -165,7 +165,10 @@ private fun DealItem(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(deal.id, Modifier.width(24.dp))
+        Text(
+            text = "#${deal.dealNumber}",
+            Modifier.width(24.dp)
+        )
         Column {
             Text(deal.opponents)
             Text(deal.contract)

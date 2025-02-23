@@ -35,9 +35,11 @@ import java.time.LocalDateTime
 fun EditTournamentScreen(
     tournamentId: String, 
     onNavigateBack: () -> Unit,
-    viewModel: TournamentViewModel = TournamentViewModel()
+    viewModel: TournamentViewModel
 ) {
-    val tournament by viewModel.getTournamentById(tournamentId).collectAsState(initial = null)
+    val tournament by viewModel.tournaments.collectAsState()
+        .value.find { it.id == tournamentId }
+        .let { remember(it) { mutableStateOf(it) } }
     
     // State for form fields
     var name by remember(tournament) { mutableStateOf(tournament?.name ?: "") }
@@ -61,7 +63,6 @@ fun EditTournamentScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            // Update tournament and navigate back
                             tournament?.let {
                                 viewModel.updateTournament(
                                     it.copy(
