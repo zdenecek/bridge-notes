@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,30 +25,44 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TournamentListScreen(
-    viewModel: TournamentViewModel, showTournamentDetail: (id: String) -> Unit
+    viewModel: TournamentViewModel, 
+    showTournamentDetail: (id: String) -> Unit,
+    onCreateTournament: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val tournaments by viewModel.tournaments.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    Scaffold(modifier = Modifier
-        .fillMaxSize()
-        .nestedScroll(scrollBehavior.nestedScrollConnection),
+    
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Tournament list")
-                }, scrollBehavior = scrollBehavior
+                    Text(stringResource(R.string.tournament_list_title))
+                },
+                scrollBehavior = scrollBehavior
             )
-
-        }) { innerPadding ->
-
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onCreateTournament
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_tournament)
+                )
+            }
+        }
+    ) { innerPadding ->
         Box(
             Modifier
                 .fillMaxSize()
@@ -57,22 +72,17 @@ fun TournamentListScreen(
                 Box(
                     Modifier.fillMaxSize()
                 ) {
-                    if (isLoading) Text(
-                        text = "Loading...", Modifier.align(Center)
-                    ) else TournamentList(tournaments, showTournamentDetail)
+                    if (isLoading) {
+                        Text(
+                            text = stringResource(R.string.loading),
+                            Modifier.align(Center)
+                        )
+                    } else {
+                        TournamentList(tournaments, showTournamentDetail)
+                    }
                 }
-
-            }
-
-            FloatingActionButton(
-                onClick = { println("click") }, modifier = Modifier
-                    .align(BottomEnd)
-                    .padding(15.dp)
-            ) {
-                Icon(Icons.Filled.Add, "Floating add button")
             }
         }
-
     }
 }
 
@@ -89,12 +99,30 @@ private fun TournamentList(tournaments: List<Tournament>, showTournamentDetail: 
 @Composable
 private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: String) -> Unit) {
     Box(modifier = Modifier
-        .padding(0.dp, 5.dp)
-        .border(2.dp, Color.Gray)
-        .padding(10.dp, 15.dp)
+        .padding(horizontal = 16.dp, vertical = 4.dp)
         .fillMaxWidth()
-        .clickable { showTournamentDetail(tournament.id) }) {
-        Text(text = tournament.name)
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+        .clickable { showTournamentDetail(tournament.id) }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = tournament.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = tournament.date.toLocalDate().toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = tournament.pairOrTeam,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
-
 }
