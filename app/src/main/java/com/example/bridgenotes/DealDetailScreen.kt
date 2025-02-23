@@ -28,7 +28,6 @@ fun DealDetailScreen(
 ) {
     LaunchedEffect(Unit) {
         println("DealDetailScreen initial load")
-        viewModel.refreshTournaments()
         viewModel.loadTournamentAndDeal(tournamentId, dealId)
     }
 

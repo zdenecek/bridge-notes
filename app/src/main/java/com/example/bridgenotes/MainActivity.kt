@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     // Create the ViewModel at the activity level
-    private val viewModel: TournamentViewModel by viewModels()
+    private val viewModel: TournamentViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

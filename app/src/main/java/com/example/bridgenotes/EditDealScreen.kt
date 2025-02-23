@@ -90,7 +90,6 @@ fun EditDealScreen(
                             )
                             viewModel.createDeal(tournamentId, newDeal)
                             // Force refresh after creation
-                            viewModel.refreshDeal(tournamentId, dealId)
                         }
                         onNavigateBack()
                     }) {
