@@ -1,4 +1,4 @@
-package com.example.bridgenotes.persistence.database
+package com.example.bridgenotes.persistence.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -18,8 +18,8 @@ import androidx.room.PrimaryKey
     indices = [Index("tournamentId")]
 )
 data class DealEntity(
-    @PrimaryKey val id: String,
-    val tournamentId: String,
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    val tournamentId: Long,
     val dealNumber: String,
     val opponents: String,
     val contract: String,

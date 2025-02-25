@@ -3,7 +3,7 @@ package com.example.bridgenotes
 import Deal
 
 data class Tournament(
-    val id: String,
+    val id: Long,
     val name: String,
     val date: java.time.LocalDateTime,
     val resultsLink: String,

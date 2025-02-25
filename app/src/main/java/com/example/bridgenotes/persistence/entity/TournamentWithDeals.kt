@@ -1,4 +1,4 @@
-package com.example.bridgenotes.persistence.database
+package com.example.bridgenotes.persistence.entity
 
 import androidx.room.Embedded
 import androidx.room.Relation

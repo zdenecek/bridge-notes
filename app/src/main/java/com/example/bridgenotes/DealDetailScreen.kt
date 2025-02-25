@@ -20,8 +20,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DealDetailScreen(
-    dealId: String,
-    tournamentId: String,
+    dealId: Long,
+    tournamentId: Long,
     onNavigateBack: () -> Unit,
     onEdit: () -> Unit,
     viewModel: TournamentViewModel = viewModel()

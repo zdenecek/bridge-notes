@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TournamentListScreen(
     viewModel: TournamentViewModel, 
-    showTournamentDetail: (id: String) -> Unit,
+    showTournamentDetail: (id: Long) -> Unit,
     onCreateTournament: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
@@ -87,7 +87,7 @@ fun TournamentListScreen(
 }
 
 @Composable
-private fun TournamentList(tournaments: List<Tournament>, showTournamentDetail: (id: String) -> Unit) {
+private fun TournamentList(tournaments: List<Tournament>, showTournamentDetail: (id: Long) -> Unit) {
     LazyColumn {
         items(tournaments) { tournament ->
             TournamentRow(tournament, showTournamentDetail)
@@ -97,7 +97,7 @@ private fun TournamentList(tournaments: List<Tournament>, showTournamentDetail: 
 }
 
 @Composable
-private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: String) -> Unit) {
+private fun TournamentRow(tournament: Tournament, showTournamentDetail: (id: Long) -> Unit) {
     Box(modifier = Modifier
         .padding(horizontal = 16.dp, vertical = 4.dp)
         .fillMaxWidth()

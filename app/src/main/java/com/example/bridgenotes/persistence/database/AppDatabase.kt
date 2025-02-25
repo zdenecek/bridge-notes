@@ -4,13 +4,16 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.bridgenotes.persistence.dao.TournamentDao
+import com.example.bridgenotes.persistence.entity.DealEntity
+import com.example.bridgenotes.persistence.entity.TournamentEntity
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Database(
     entities = [TournamentEntity::class, DealEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

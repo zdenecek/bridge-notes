@@ -3,7 +3,7 @@ package com.example.bridgenotes
 import Deal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bridgenotes.persistence.database.TournamentRepository
+import com.example.bridgenotes.persistence.database.DataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,10 +12,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TournamentViewModel(
-    private val repository: TournamentRepository
+    private val repository: DataRepository
 ) : ViewModel() {
 
-    // Expose tournaments as a StateFlow (using repository flow)
     val tournaments: StateFlow<List<Tournament>> = repository.getAllTournaments()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -28,7 +27,7 @@ class TournamentViewModel(
     private val _currentDeal = MutableStateFlow<Deal?>(null)
     val currentDeal: StateFlow<Deal?> = _currentDeal.asStateFlow()
 
-    fun loadTournamentAndDeal(tournamentId: String, dealId: String) {
+    fun loadTournamentAndDeal(tournamentId: Long, dealId: Long) {
         viewModelScope.launch {
             _isLoading.value = true
             val tournament = repository.getTournament(tournamentId)
@@ -52,16 +51,15 @@ class TournamentViewModel(
         }
     }
 
-    fun createDeal(tournamentId: String, deal: Deal) {
+    fun createDeal(tournamentId: Long, deal: Deal) {
         viewModelScope.launch {
             _isLoading.value = true
-            // The deal should already contain the correct tournamentId.
             repository.createDeal(deal)
             _isLoading.value = false
         }
     }
 
-    fun updateDeal(tournamentId: String, deal: Deal) {
+    fun updateDeal(tournamentId: Long, deal: Deal) {
         viewModelScope.launch {
             repository.updateDeal(deal)
         }

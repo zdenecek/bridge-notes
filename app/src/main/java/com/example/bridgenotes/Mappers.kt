@@ -1,14 +1,13 @@
 package com.example.bridgenotes
 
 import Deal
-import com.example.bridgenotes.persistence.database.DealEntity
-import com.example.bridgenotes.persistence.database.TournamentWithDeals
-import com.example.bridgenotes.persistence.database.TournamentEntity
+import com.example.bridgenotes.persistence.entity.DealEntity
+import com.example.bridgenotes.persistence.entity.TournamentWithDeals
+import com.example.bridgenotes.persistence.entity.TournamentEntity
 
 
 object Mappers {
 
-    // Convert a database entity (com.example.bridgenotes.persistence.database.TournamentWithDeals) to a domain model.
     fun TournamentWithDeals.toDomainModel(): Tournament {
         return Tournament(
             id = this.tournament.id,
@@ -21,7 +20,6 @@ object Mappers {
         )
     }
 
-    // Convert a domain model to a database entity (TournamentEntity)
     fun Tournament.toEntity(): TournamentEntity {
         return TournamentEntity(
             id = this.id,
@@ -33,7 +31,6 @@ object Mappers {
         )
     }
 
-    // Convert a database entity (com.example.bridgenotes.persistence.database.DealEntity) to a domain model.
     fun DealEntity.toDomainModel(): Deal {
         return Deal(
             id = this.id,
@@ -48,7 +45,6 @@ object Mappers {
         )
     }
 
-    // Convert a domain model (Deal) to a database entity (com.example.bridgenotes.persistence.database.DealEntity).
     fun Deal.toEntity(): DealEntity {
         return DealEntity(
             id = this.id,

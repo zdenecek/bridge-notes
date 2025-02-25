@@ -33,7 +33,7 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTournamentScreen(
-    tournamentId: String, 
+    tournamentId: Long,
     onNavigateBack: () -> Unit,
     viewModel: TournamentViewModel
 ) {

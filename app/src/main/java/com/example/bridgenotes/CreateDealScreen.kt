@@ -20,7 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateDealScreen(
-    tournamentId: String, 
+    tournamentId: Long,
     onNavigateBack: () -> Unit,
     viewModel: TournamentViewModel
 ) {
@@ -37,7 +37,7 @@ fun CreateDealScreen(
     val scope = rememberCoroutineScope()
 
     // Add state tracking for the new deal
-    var createdDealId by remember { mutableStateOf<String?>(null) }
+    var createdDealId by remember { mutableStateOf<Long?>(null) }
 
     // Add effect to monitor deal creation
     LaunchedEffect(createdDealId) {
@@ -64,7 +64,7 @@ fun CreateDealScreen(
                     IconButton(
                         onClick = {
                             val newDeal = Deal(
-                                id = UUID.randomUUID().toString(),
+                                id = 0,
                                 tournamentId = tournamentId,
                                 dealNumber = dealNumber,
                                 opponents = opponents,

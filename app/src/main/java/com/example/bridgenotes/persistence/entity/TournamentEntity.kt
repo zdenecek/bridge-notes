@@ -1,4 +1,4 @@
-package com.example.bridgenotes.persistence.database
+package com.example.bridgenotes.persistence.entity
 
 
 
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 @Entity(tableName = "tournaments")
 data class TournamentEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
     val date: LocalDateTime,
     val resultsLink: String,

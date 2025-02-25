@@ -18,35 +18,35 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDealScreen(
-    dealId: String,
-    tournamentId: String,
+    dealId: Long,
+    tournamentId: Long,
     onNavigateBack: () -> Unit,
     viewModel: TournamentViewModel = viewModel()
 ) {
-    val deal by viewModel.tournaments.collectAsState()
-        .value.find { it.id == tournamentId }
+    val deal = viewModel.tournaments.collectAsState().value
+        .find { it.id == tournamentId }
         ?.deals?.find { it.id == dealId }
-        .let { remember(it) { mutableStateOf(it) } }
-    
-    // State for form fields - initialize with empty strings
-    var opponents by remember { mutableStateOf("") }
-    var contract by remember { mutableStateOf("") }
-    var declarer by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf("") }
-    var score by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
 
-    // Update state when deal changes
-    LaunchedEffect(deal) {
-        deal?.let { currentDeal ->
-            opponents = currentDeal.opponents
-            contract = currentDeal.contract
-            declarer = currentDeal.declarer
-            result = currentDeal.result
-            score = currentDeal.score
-            notes = currentDeal.notes
+    if (deal == null) {
+        LaunchedEffect(Unit) {
+            onNavigateBack()
         }
+        Box(Modifier.fillMaxSize()) {
+            Text(
+                text = "Error: Deal not found",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        return
     }
+
+    // Otherwise, proceed with editing using the non-null deal.
+    var opponents by remember { mutableStateOf(deal.opponents) }
+    var contract by remember { mutableStateOf(deal.contract) }
+    var declarer by remember { mutableStateOf(deal.declarer) }
+    var result by remember { mutableStateOf(deal.result) }
+    var score by remember { mutableStateOf(deal.score) }
+    var notes by remember { mutableStateOf(deal.notes) }
 
     Scaffold(
         topBar = {
@@ -61,26 +61,11 @@ fun EditDealScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { 
-                        // Save deal
-                        deal?.let { currentDeal ->
-                            viewModel.updateDeal(
-                                tournamentId,
-                                currentDeal.copy(
-                                    opponents = opponents,
-                                    contract = contract,
-                                    declarer = declarer,
-                                    result = result,
-                                    score = score,
-                                    notes = notes,
-                                    dealNumber = currentDeal.dealNumber
-                                )
-                            )
-                        } ?: run {
-                            val newDeal = Deal(
-                                id = dealId,
-                                tournamentId = tournamentId,
-                                dealNumber = dealId,
+                    IconButton(onClick = {
+                        // Save deal changes
+                        viewModel.updateDeal(
+                            tournamentId,
+                            deal.copy(
                                 opponents = opponents,
                                 contract = contract,
                                 declarer = declarer,
@@ -88,9 +73,7 @@ fun EditDealScreen(
                                 score = score,
                                 notes = notes
                             )
-                            viewModel.createDeal(tournamentId, newDeal)
-                            // Force refresh after creation
-                        }
+                        )
                         onNavigateBack()
                     }) {
                         Icon(
@@ -102,68 +85,56 @@ fun EditDealScreen(
             )
         }
     ) { innerPadding ->
-        when (val currentDeal = deal) {
-            null -> {
-                Box(Modifier.fillMaxSize()) {
-                    Text(
-                        text = stringResource(R.string.loading),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = opponents,
-                        onValueChange = { opponents = it },
-                        label = { Text(stringResource(R.string.deal_opponents_label)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    OutlinedTextField(
-                        value = contract,
-                        onValueChange = { contract = it },
-                        label = { Text(stringResource(R.string.deal_contract_label)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    OutlinedTextField(
-                        value = declarer,
-                        onValueChange = { declarer = it },
-                        label = { Text(stringResource(R.string.deal_declarer_label)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    OutlinedTextField(
-                        value = result,
-                        onValueChange = { result = it },
-                        label = { Text(stringResource(R.string.deal_result_label)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    
-                    OutlinedTextField(
-                        value = score,
-                        onValueChange = { score = it },
-                        label = { Text(stringResource(R.string.deal_score_label)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                    
-                    OutlinedTextField(
-                        value = notes,
-                        onValueChange = { notes = it },
-                        label = { Text(stringResource(R.string.deal_notes_label)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3
-                    )
-                }
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = opponents,
+                onValueChange = { opponents = it },
+                label = { Text(stringResource(R.string.deal_opponents_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = contract,
+                onValueChange = { contract = it },
+                label = { Text(stringResource(R.string.deal_contract_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = declarer,
+                onValueChange = { declarer = it },
+                label = { Text(stringResource(R.string.deal_declarer_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = result,
+                onValueChange = { result = it },
+                label = { Text(stringResource(R.string.deal_result_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = score,
+                onValueChange = { score = it },
+                label = { Text(stringResource(R.string.deal_score_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            OutlinedTextField(
+                value = notes,
+                onValueChange = { notes = it },
+                label = { Text(stringResource(R.string.deal_notes_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3
+            )
         }
     }
-} 
+}

@@ -42,11 +42,11 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TournamentDetailsScreen(
-    tournamentId: String,
+    tournamentId: Long,
     onNavigateUp: () -> Unit,
-    onEditTournament: (String) -> Unit,
+    onEditTournament: (Long) -> Unit,
     onCreateDeal: () -> Unit,
-    onShowDealDetail: (String) -> Unit,
+    onShowDealDetail: (Long) -> Unit,
     viewModel: TournamentViewModel
 ) {
     val tournament by viewModel.tournaments.collectAsState()

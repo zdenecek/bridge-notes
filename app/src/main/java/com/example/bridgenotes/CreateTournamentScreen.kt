@@ -64,7 +64,7 @@ fun CreateTournamentScreen(
                     IconButton(
                         onClick = {
                             val newTournament = Tournament(
-                                id = UUID.randomUUID().toString(),
+                                id = 0,
                                 name = name,
                                 date = try {
                                     LocalDateTime.parse(date)
