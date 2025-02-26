@@ -41,6 +41,7 @@ fun EditDealScreen(
     }
 
     // Otherwise, proceed with editing using the non-null deal.
+    var dealNumber by remember { mutableStateOf(deal.dealNumber)}
     var opponents by remember { mutableStateOf(deal.opponents) }
     var contract by remember { mutableStateOf(deal.contract) }
     var declarer by remember { mutableStateOf(deal.declarer) }
@@ -66,6 +67,7 @@ fun EditDealScreen(
                         viewModel.updateDeal(
                             tournamentId,
                             deal.copy(
+                                dealNumber = dealNumber,
                                 opponents = opponents,
                                 contract = contract,
                                 declarer = declarer,
@@ -92,6 +94,15 @@ fun EditDealScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
+            OutlinedTextField(
+                value = dealNumber,
+                onValueChange = { dealNumber = it },
+                label = { Text(stringResource(R.string.deal_number_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
             OutlinedTextField(
                 value = opponents,
                 onValueChange = { opponents = it },
