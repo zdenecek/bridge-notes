@@ -1,6 +1,8 @@
 package com.example.bridgenotes
 
 import Deal
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -114,12 +117,16 @@ fun TournamentDetailsScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 if (!tournament?.resultsLink.isNullOrBlank()) {
+                    val context = LocalContext.current
                     Text(
                         text = tournament?.resultsLink ?: "",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable {
-                            // Handle link click
+                            tournament?.resultsLink?.let { link ->
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                                context.startActivity(intent)
+                            }
                         }
                     )
                 }
