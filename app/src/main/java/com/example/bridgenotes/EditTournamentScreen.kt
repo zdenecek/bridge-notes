@@ -11,13 +11,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,10 +51,42 @@ fun EditTournamentScreen(
     
     // State for form fields
     var name by remember(tournament) { mutableStateOf(tournament?.name ?: "") }
-    var date by remember(tournament) { mutableStateOf(tournament?.date?.toString() ?: "") }
+    var date by remember(tournament) { mutableStateOf(tournament?.date ?: LocalDateTime.now()) }
+    var showDatePicker by remember { mutableStateOf(false) }
     var resultsLink by remember(tournament) { mutableStateOf(tournament?.resultsLink ?: "") }
     var pairOrTeam by remember(tournament) { mutableStateOf(tournament?.pairOrTeam ?: "") }
     var note by remember(tournament) { mutableStateOf(tournament?.note ?: "") }
+
+    if (showDatePicker)     {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = date.atZone(ZoneId.systemDefault())
+                .toInstant().toEpochMilli()
+        )
+        
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        date = LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(millis),
+                            ZoneId.systemDefault()
+                        )
+                    }
+                    showDatePicker = false
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(stringResource(R.string.dismiss))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -67,7 +107,7 @@ fun EditTournamentScreen(
                                 viewModel.updateTournament(
                                     it.copy(
                                         name = name,
-                                        date = LocalDateTime.parse(date), // Add proper date parsing
+                                        date = date,  // Now using LocalDateTime directly
                                         resultsLink = resultsLink,
                                         pairOrTeam = pairOrTeam,
                                         note = note
@@ -109,15 +149,18 @@ fun EditTournamentScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 OutlinedTextField(
-                    value = date,
-                    onValueChange = { date = it },
+                    value = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
+                    onValueChange = { },
                     label = { Text(stringResource(R.string.tournament_date_label)) },
                     modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
                     trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = stringResource(R.string.select_date)
-                        )
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(
+                                Icons.Default.DateRange,
+                                contentDescription = stringResource(R.string.select_date)
+                            )
+                        }
                     }
                 )
                 
