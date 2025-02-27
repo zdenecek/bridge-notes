@@ -15,6 +15,7 @@
 local.properties
 
 /.idea
+.idea/gradle.xml
 
 # Created by https://www.toptal.com/developers/gitignore/api/android,androidstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=android,androidstudio
