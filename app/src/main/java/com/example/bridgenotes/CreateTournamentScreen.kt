@@ -31,6 +31,14 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import java.time.LocalDateTime
 import java.util.UUID
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.rememberDatePickerState
+import java.time.ZoneId
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +48,8 @@ fun CreateTournamentScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var name by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var date by remember { mutableStateOf(LocalDateTime.now()) }
     var resultsLink by remember { mutableStateOf("") }
     var pairTeam by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
@@ -66,11 +75,7 @@ fun CreateTournamentScreen(
                             val newTournament = Tournament(
                                 id = 0,
                                 name = name,
-                                date = try {
-                                    LocalDateTime.parse(date)
-                                } catch (e: Exception) {
-                                    LocalDateTime.now()
-                                },
+                                date = date,
                                 resultsLink = resultsLink,
                                 pairOrTeam = pairTeam,
                                 note = note,
@@ -103,16 +108,50 @@ fun CreateTournamentScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState(
+                    initialSelectedDateMillis = date.atZone(ZoneId.systemDefault())
+                        .toInstant().toEpochMilli()
+                )
+                
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                date = LocalDateTime.ofInstant(
+                                    Instant.ofEpochMilli(millis),
+                                    ZoneId.systemDefault()
+                                )
+                            }
+                            showDatePicker = false
+                        }) {
+                            Text(stringResource(R.string.confirm))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text(stringResource(R.string.dismiss))
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
             OutlinedTextField(
-                value = date,
-                onValueChange = { date = it },
+                value = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
+                onValueChange = { },
                 label = { Text(stringResource(R.string.tournament_date_label)) },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
                 trailingIcon = {
-                    Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = stringResource(R.string.select_date)
-                    )
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(
+                            Icons.Default.DateRange,
+                            contentDescription = stringResource(R.string.select_date)
+                        )
+                    }
                 }
             )
 

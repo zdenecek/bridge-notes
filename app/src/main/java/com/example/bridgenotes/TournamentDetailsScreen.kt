@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +114,7 @@ fun TournamentDetailsScreen(
             ) {
                 // Tournament details
                 Text(
-                    text = tournament?.date?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) ?: "",
+                    text = tournament?.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)) ?: "",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 if (!tournament?.resultsLink.isNullOrBlank()) {
@@ -178,7 +179,7 @@ private fun DealItem(
         )
         Column {
             Text(deal.opponents)
-            Text(deal.contract)
+            Text(deal.contract + " " + deal.declarer + " " + deal.result + " " + deal.score)
             Text(deal.notes)
         }
     }

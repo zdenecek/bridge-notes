@@ -31,4 +31,6 @@
     <string name="deal_other_label">Other</string>
     <string name="edit_deal">Edit deal</string>
     <string name="deals">Deals</string>
+    <string name="confirm">Confirm</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
