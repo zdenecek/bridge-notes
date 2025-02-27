@@ -64,4 +64,10 @@ class TournamentViewModel(
             repository.updateDeal(deal)
         }
     }
+
+    fun deleteTournament(tournament: Tournament) {
+        viewModelScope.launch {
+            repository.deleteTournament(tournament)
+        }
+    }
 }

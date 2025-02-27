@@ -1,6 +1,7 @@
 package com.example.bridgenotes.persistence.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -33,4 +34,7 @@ interface TournamentDao {
     @Transaction
     @Query("SELECT * FROM tournaments")
     fun getAllTournamentsWithDeals(): Flow<List<TournamentWithDeals>>
+
+    @Delete
+    suspend fun deleteTournament(tournament: TournamentEntity)
 }

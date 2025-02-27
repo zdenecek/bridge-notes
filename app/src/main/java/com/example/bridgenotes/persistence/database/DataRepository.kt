@@ -41,4 +41,8 @@ class DataRepository(private val tournamentDao: TournamentDao) {
     suspend fun updateDeal(deal: Deal) {
         tournamentDao.updateDeal(deal.toEntity())
     }
+
+    suspend fun deleteTournament(tournament: Tournament) {
+        tournamentDao.deleteTournament(tournament.toEntity())
+    }
 }
