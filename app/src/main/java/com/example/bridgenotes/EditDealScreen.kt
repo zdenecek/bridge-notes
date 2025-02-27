@@ -15,6 +15,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+private const val PASSED_OUT = "PASSED OUT"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDealScreen(
@@ -48,6 +50,24 @@ fun EditDealScreen(
     var result by remember { mutableStateOf(deal.result) }
     var score by remember { mutableStateOf(deal.score) }
     var notes by remember { mutableStateOf(deal.notes) }
+
+    // Add these lists for the dropdown options
+    val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
+    val suits = listOf("♠", "♥", "♦", "♣", "NT")
+    val doubles = listOf("-", "X", "XX")
+
+    // Split the contract into components
+    var contractLevel by remember { 
+        mutableStateOf(if (deal.contract == PASSED_OUT) PASSED_OUT else deal.contract.firstOrNull()?.toString() ?: "1") 
+    }
+    var contractSuit by remember { 
+        mutableStateOf(if (deal.contract == PASSED_OUT) "" else deal.contract.substring(1).takeWhile { !it.isWhitespace() }) 
+    }
+    var contractDouble by remember { 
+        mutableStateOf(if (deal.contract == PASSED_OUT) "" else deal.contract.substringAfterLast(" ", "-")) 
+    }
+
+    var isPassedOut by remember { mutableStateOf(deal.contract == PASSED_OUT) }
 
     Scaffold(
         topBar = {
@@ -110,12 +130,115 @@ fun EditDealScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = contract,
-                onValueChange = { contract = it },
-                label = { Text(stringResource(R.string.deal_contract_label)) },
-                modifier = Modifier.fillMaxWidth()
-            )
+             Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                var levelExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = levelExpanded,
+                    onExpandedChange = { levelExpanded = !levelExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = contractLevel,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Level") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = levelExpanded,
+                        onDismissRequest = { levelExpanded = false }
+                    ) {
+                        levels.forEach { level ->
+                            DropdownMenuItem(
+                                text = { Text(level) },
+                                onClick = { 
+                                    contractLevel = level
+                                    contract = if (level == PASSED_OUT) {
+                                        PASSED_OUT
+                                    } else {
+                                        "$level$contractSuit $contractDouble"
+                                    }
+                                    levelExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                var suitExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = suitExpanded,
+                    onExpandedChange = { if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = contractSuit,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Suit") },
+                        enabled = contractLevel != PASSED_OUT,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = suitExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = suitExpanded,
+                        onDismissRequest = { suitExpanded = false }
+                    ) {
+                        suits.forEach { suit ->
+                            DropdownMenuItem(
+                                text = { Text(suit) },
+                                onClick = { 
+                                    contractSuit = suit
+                                    if (contractLevel != PASSED_OUT)
+                                    {
+                                        contract = "$contractLevel$contractSuit $contractDouble"
+                                    }
+                                    suitExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                var doubleExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = doubleExpanded,
+                    onExpandedChange = { if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = contractDouble,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Double") },
+                        enabled = contractLevel != PASSED_OUT,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = doubleExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = doubleExpanded,
+                        onDismissRequest = { doubleExpanded = false }
+                    ) {
+                        doubles.forEach { double ->
+                            DropdownMenuItem(
+                                text = { Text(double) },
+                                onClick = { 
+                                    contractDouble = double
+                                    if (contractLevel != PASSED_OUT)
+                                    {
+                                      contract = "$contractLevel$contractSuit $double"
+                                    }
+                                    doubleExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = declarer,
@@ -146,6 +269,8 @@ fun EditDealScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
+
+           
         }
     }
 }
