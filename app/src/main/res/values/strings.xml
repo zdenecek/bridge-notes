@@ -38,4 +38,7 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="delete_tournament">Delete tournament</string>
+    <string name="delete_deal_title">Delete Deal</string>
+    <string name="delete_deal_confirmation">Are you sure you want to delete this deal? This action cannot be undone.</string>
+    <string name="delete_deal">Delete deal</string>
 </resources>

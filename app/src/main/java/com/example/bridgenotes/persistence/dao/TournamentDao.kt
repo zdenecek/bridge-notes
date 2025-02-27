@@ -27,6 +27,9 @@ interface TournamentDao {
     @Update
     suspend fun updateDeal(deal: DealEntity)
 
+    @Delete
+    suspend fun deleteDeal(deal: DealEntity)
+
     @Transaction
     @Query("SELECT * FROM tournaments WHERE id = :tournamentId")
     suspend fun getTournamentWithDeals(tournamentId: Long): TournamentWithDeals?

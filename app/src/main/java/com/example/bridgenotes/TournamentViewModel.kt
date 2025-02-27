@@ -1,6 +1,8 @@
 package com.example.bridgenotes
 
 import Deal
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bridgenotes.persistence.database.DataRepository
@@ -68,6 +70,12 @@ class TournamentViewModel(
     fun deleteTournament(tournament: Tournament) {
         viewModelScope.launch {
             repository.deleteTournament(tournament)
+        }
+    }
+
+    fun deleteDeal(deal: Deal) {
+        viewModelScope.launch {
+            repository.deleteDeal(deal)
         }
     }
 }

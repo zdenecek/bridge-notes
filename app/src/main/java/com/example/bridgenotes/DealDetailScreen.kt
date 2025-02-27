@@ -3,6 +3,7 @@ package com.example.bridgenotes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ fun DealDetailScreen(
         println("Tournament deals: ${tournament?.deals?.map { it.id }}")
     }
 
+    val showDeleteConfirmation = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,6 +69,12 @@ fun DealDetailScreen(
                 },
                 actions = {
                     if (deal != null) {
+                        IconButton(onClick = { showDeleteConfirmation.value = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.delete_deal)
+                            )
+                        }
                         IconButton(onClick = onEdit) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
@@ -103,6 +112,30 @@ fun DealDetailScreen(
                 }
             }
         }
+    }
+
+    if (showDeleteConfirmation.value) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation.value = false },
+            title = { Text(stringResource(R.string.delete_deal_title)) },
+            text = { Text(stringResource(R.string.delete_deal_confirmation)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deal?.let { viewModel.deleteDeal(it) }
+                        showDeleteConfirmation.value = false
+                        onNavigateBack()
+                    }
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation.value = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 
