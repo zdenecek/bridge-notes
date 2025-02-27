@@ -30,7 +30,6 @@ fun CreateDealScreen(
     var dealNumber by remember { mutableStateOf("") }
     var opponents by remember { mutableStateOf("") }
     var contract by remember { mutableStateOf("") }
-    var declarer by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var score by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
@@ -45,6 +44,7 @@ fun CreateDealScreen(
     val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
     val suits = listOf("♠", "♥", "♦", "♣", "NT")
     val doubles = listOf("-", "X", "XX")
+    val declarers = listOf("North", "East", "South", "West")
 
     val tournaments by viewModel.tournaments.collectAsState()
     val tournament = tournaments.find { it.id == tournamentId }
@@ -52,6 +52,9 @@ fun CreateDealScreen(
 
     // Add state tracking for the new deal
     var createdDealId by remember { mutableStateOf<Long?>(null) }
+
+    // Change declarer state to initialize with first option
+    var declarer by remember { mutableStateOf(declarers[0]) }
 
     // Add effect to monitor deal creation
     LaunchedEffect(createdDealId) {
@@ -246,12 +249,39 @@ fun CreateDealScreen(
                 }
             }
             
-            OutlinedTextField(
-                value = declarer,
-                onValueChange = { declarer = it },
-                label = { Text(stringResource(R.string.deal_declarer_label)) },
+            // Replace the declarer TextField with this dropdown
+            var declarerExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = declarerExpanded,
+                onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                OutlinedTextField(
+                    value = declarer,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.deal_declarer_label)) },
+                    enabled = contractLevel != PASSED_OUT,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = declarerExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = declarerExpanded,
+                    onDismissRequest = { declarerExpanded = false }
+                ) {
+                    declarers.forEach { direction ->
+                        DropdownMenuItem(
+                            text = { Text(direction) },
+                            onClick = { 
+                                declarer = direction
+                                declarerExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
             
             OutlinedTextField(
                 value = result,

@@ -178,7 +178,7 @@ private fun DealItem(
         )
         Column {
             Text(deal.opponents)
-            Text(deal.contract)
+            Text("${deal.contract} ${deal.declarer} ${deal.result} ${deal.score}")
             Text(deal.notes)
         }
     }

@@ -55,6 +55,7 @@ fun EditDealScreen(
     val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
     val suits = listOf("♠", "♥", "♦", "♣", "NT")
     val doubles = listOf("-", "X", "XX")
+    val declarers = listOf("North", "East", "South", "West")
 
     // Split the contract into components
     var contractLevel by remember { 
@@ -240,12 +241,38 @@ fun EditDealScreen(
                 }
             }
 
-            OutlinedTextField(
-                value = declarer,
-                onValueChange = { declarer = it },
-                label = { Text(stringResource(R.string.deal_declarer_label)) },
+            var declarerExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = declarerExpanded,
+                onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                OutlinedTextField(
+                    value = declarer,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.deal_declarer_label)) },
+                    enabled = contractLevel != PASSED_OUT,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = declarerExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = declarerExpanded,
+                    onDismissRequest = { declarerExpanded = false }
+                ) {
+                    declarers.forEach { direction ->
+                        DropdownMenuItem(
+                            text = { Text(direction) },
+                            onClick = { 
+                                declarer = direction
+                                declarerExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = result,
