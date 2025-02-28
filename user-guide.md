@@ -29,6 +29,7 @@ Tap any tournament in the list to view its full details. From here you can:
 - View all recorded deals
 - Add new deals
 - Edit tournament details
+- Delete tournament
 
 ### Editing a Tournament
 
@@ -36,8 +37,6 @@ Tap any tournament in the list to view its full details. From here you can:
 2. Tap the edit icon in the top right corner
 3. Modify any fields you wish to update
 4. Tap the check mark to save your changes
-
-## Managing Deals
 
 ### Adding a New Deal
 
@@ -55,7 +54,7 @@ Tap any tournament in the list to view its full details. From here you can:
 
 1. Open the tournament containing the deal
 2. Tap the deal you want to edit
-3. Modify the details
+3. Modify the details or delete the deal
 4. Tap the check mark to save changes
 
 ## Tips
