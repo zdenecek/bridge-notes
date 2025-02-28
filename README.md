@@ -14,9 +14,13 @@ Uživatelská dokumentace je dostupná v souboru [user-guide.md](user-guide.md).
   - Android 2.0.21
   - Android SDK 34
   - Gradle 8.10.2
-- Konfigurovatelné vložení demo v dat v souboru [build.gradle](./app/build.gradle) v `android -> defaultConfig`
+- Konfigurovatelné vložení demo v dat v souboru [build.gradle](./app/build.gradle.kts):
   ```kotlin
-          buildConfigField("boolean", "INSERT_DEMO_DATA", "true") # change to false for not inserting demo data
+  android {
+    defualtConfig {
+          buildConfigField("boolean", "INSERT_DEMO_DATA", "true") // change to false for not inserting demo data
+      }
+  }
   ```
 
 ## Co je bridž
