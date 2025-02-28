@@ -81,7 +81,6 @@ fun CreateDealScreen(
                     IconButton(
                         onClick = {
                             val newDeal = Deal(
-                                id = 0,
                                 tournamentId = tournamentId,
                                 dealNumber = dealNumber,
                                 opponents = opponents,
@@ -139,8 +138,6 @@ fun CreateDealScreen(
             )
             
 
-
-            // Replace the existing contract TextField with this Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -249,7 +246,6 @@ fun CreateDealScreen(
                 }
             }
             
-            // Replace the declarer TextField with this dropdown
             var declarerExpanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = declarerExpanded,

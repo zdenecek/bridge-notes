@@ -28,9 +28,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import java.time.LocalDateTime
 import java.util.UUID
+import androidx.compose.material3.DatePickerFormatter
+import java.text.SimpleDateFormat
+import java.util.Locale
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DatePicker
@@ -73,7 +77,6 @@ fun CreateTournamentScreen(
                     IconButton(
                         onClick = {
                             val newTournament = Tournament(
-                                id = 0,
                                 name = name,
                                 date = date,
                                 resultsLink = resultsLink,
@@ -113,7 +116,8 @@ fun CreateTournamentScreen(
                     initialSelectedDateMillis = date.atZone(ZoneId.systemDefault())
                         .toInstant().toEpochMilli()
                 )
-                
+                val customFormatter = remember { CustomDateFormatter() }
+
                 DatePickerDialog(
                     onDismissRequest = { showDatePicker = false },
                     confirmButton = {
@@ -135,7 +139,7 @@ fun CreateTournamentScreen(
                         }
                     }
                 ) {
-                    DatePicker(state = datePickerState)
+                    DatePicker(state = datePickerState, dateFormatter = customFormatter)
                 }
             }
 
@@ -177,5 +181,23 @@ fun CreateTournamentScreen(
                 minLines = 3
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+class CustomDateFormatter : DatePickerFormatter {
+    private val dateFormat = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
+    private val monthYearFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+
+    override fun formatDate(
+        dateMillis: Long?,
+        locale: CalendarLocale,
+        forContentDescription: Boolean
+    ): String? {
+        return dateMillis?.let { dateFormat.format(it) }
+    }
+
+    override fun formatMonthYear(monthMillis: Long?, locale: CalendarLocale): String? {
+        return monthMillis?.let { monthYearFormat.format(it) }
     }
 }

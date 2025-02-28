@@ -29,6 +29,65 @@ class TournamentViewModel(
     private val _currentDeal = MutableStateFlow<Deal?>(null)
     val currentDeal: StateFlow<Deal?> = _currentDeal.asStateFlow()
 
+    init {
+//        viewModelScope.launch {
+//            for (tournament in createDemoData()) {
+//                repository.createTournament(tournament)
+//            }
+//        }
+    }
+
+    private fun createDemoData(): List<Tournament> {
+        return listOf(
+            Tournament(
+                id = 0,
+                name = "Velká cena Prahy - 1. kolo",
+                date = java.time.LocalDateTime.of(2024, 12, 11, 12, 0),
+                resultsLink = "http://results.bridgepraha.cz/vcp2024_1",
+                pairOrTeam = "Tomis - Kaštovský",
+                note = "První kolo série Velká cena Prahy",
+                deals = listOf(
+                    Deal(
+                        dealNumber = "1",
+                        opponents = "Svoboda - Kopecký",
+                        contract = "3NT",
+                        declarer = "E",
+                        result = "+1",
+                        score = "-430",
+                        notes = "Zdeněk to pokazil, musí vrátit ve třetím štychu piku."
+                    ),
+                    Deal(
+                        dealNumber = "2",
+                        opponents = "Medlín - Martynek",
+                        contract = "4♠",
+                        declarer = "S",
+                        result = "=",
+                        score = "+420",
+                        notes = "Správná obrana by porazila závazek."
+                    )
+                )
+            ),
+            Tournament(
+                name = "VC Neratovic",
+                date = java.time.LocalDateTime.of(2024, 3, 20, 17, 0),
+                resultsLink = "http://results.bridgepraha.cz/vcn2024",
+                pairOrTeam = "Tomis - Kaštovský",
+                note = "Večerní turnaj v Neratovicích",
+                deals = listOf(
+                    Deal(
+                        dealNumber = "1",
+                        opponents = "Nulíček - Vozábal",
+                        contract = "6♥",
+                        declarer = "W",
+                        result = "-1",
+                        score = "+100",
+                        notes = "Dobrá obrana porazila slem."
+                    )
+                )
+            )
+        )
+    }
+
     fun loadTournamentAndDeal(tournamentId: Long, dealId: Long) {
         viewModelScope.launch {
             _isLoading.value = true

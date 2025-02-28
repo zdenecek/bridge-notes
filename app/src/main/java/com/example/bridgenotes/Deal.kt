@@ -1,6 +1,6 @@
 data class Deal(
-    val id: Long,
-    val tournamentId: Long,
+    val id: Long = 0L,
+    val tournamentId: Long = 0L,
     val dealNumber: String,
     val opponents: String,
     val contract: String,

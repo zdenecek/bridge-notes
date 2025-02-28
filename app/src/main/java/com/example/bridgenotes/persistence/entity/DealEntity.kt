@@ -18,8 +18,8 @@ import androidx.room.PrimaryKey
     indices = [Index("tournamentId")]
 )
 data class DealEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    val tournamentId: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val tournamentId: Long = 0L,
     val dealNumber: String,
     val opponents: String,
     val contract: String,
