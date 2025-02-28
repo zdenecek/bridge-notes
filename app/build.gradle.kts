@@ -21,7 +21,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("boolean", "INSERT_DEMO_DATA", "true")
+        buildConfigField("boolean", "INSERT_DEMO_DATA", "true") // change to false for not inserting demo data
     }
 
     buildTypes {
