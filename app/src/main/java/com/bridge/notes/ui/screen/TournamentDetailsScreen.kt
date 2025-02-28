@@ -210,7 +210,9 @@ private fun DealItem(
     ) {
         Text(
             text = "#${deal.dealNumber}",
-            Modifier.width(32.dp)
+            Modifier
+                .width(48.dp)
+                .padding(end = 8.dp)
         )
         Column {
             Text(deal.opponents)
