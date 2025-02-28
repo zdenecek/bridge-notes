@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.bridgenotes"
+    namespace = "com.bridge.notes"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.bridgenotes"
+        applicationId = "com.bridge.notes"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -21,6 +21,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("boolean", "INSERT_DEMO_DATA", "true")
     }
 
     buildTypes {
