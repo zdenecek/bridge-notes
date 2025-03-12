@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -21,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,6 +62,8 @@ fun EditTournamentScreen(
     var resultsLink by rememberSaveable(tournament) { mutableStateOf(tournament?.resultsLink ?: "") }
     var pairOrTeam by rememberSaveable(tournament) { mutableStateOf(tournament?.pairOrTeam ?: "") }
     var note by rememberSaveable(tournament) { mutableStateOf(tournament?.note ?: "") }
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     if (showDatePicker)     {
         val datePickerState = rememberDatePickerState(
@@ -103,6 +108,7 @@ fun EditTournamentScreen(
                         )
                     }
                 },
+                scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(
                         onClick = {
@@ -141,6 +147,7 @@ fun EditTournamentScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 OutlinedTextField(
                     value = name,

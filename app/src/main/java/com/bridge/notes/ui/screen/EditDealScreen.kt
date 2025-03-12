@@ -1,6 +1,7 @@
 package com.bridge.notes.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -11,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -70,6 +72,8 @@ fun EditDealScreen(
         mutableStateOf(if (deal.contract == PASSED_OUT) "" else deal.contract.substringAfterLast(" ", "-"))
     }
 
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -82,6 +86,7 @@ fun EditDealScreen(
                         )
                     }
                 },
+                scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(onClick = {
                         // Save deal changes
@@ -112,7 +117,8 @@ fun EditDealScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 

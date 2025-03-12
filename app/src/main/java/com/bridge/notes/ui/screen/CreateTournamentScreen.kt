@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,13 +50,14 @@ fun CreateTournamentScreen(
     onNavigateBack: () -> Unit,
     viewModel: TournamentViewModel
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var name by rememberSaveable { mutableStateOf("") }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var date by rememberSaveable { mutableStateOf(LocalDateTime.now()) }
     var resultsLink by rememberSaveable { mutableStateOf("") }
     var pairTeam by rememberSaveable { mutableStateOf("") }
     var note by rememberSaveable { mutableStateOf("") }
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         modifier = Modifier
@@ -71,6 +74,7 @@ fun CreateTournamentScreen(
                         )
                     }
                 },
+                scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(
                         onClick = {
@@ -101,6 +105,7 @@ fun CreateTournamentScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             OutlinedTextField(
                 value = name,
