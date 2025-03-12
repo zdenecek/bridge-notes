@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bridge.notes.R
@@ -44,13 +45,13 @@ fun EditDealScreen(
     }
 
     // Otherwise, proceed with editing using the non-null deal.
-    var dealNumber by remember { mutableStateOf(deal.dealNumber)}
-    var opponents by remember { mutableStateOf(deal.opponents) }
-    var contract by remember { mutableStateOf(deal.contract) }
-    var declarer by remember { mutableStateOf(deal.declarer) }
-    var result by remember { mutableStateOf(deal.result) }
-    var score by remember { mutableStateOf(deal.score) }
-    var notes by remember { mutableStateOf(deal.notes) }
+    var dealNumber by rememberSaveable { mutableStateOf(deal.dealNumber)}
+    var opponents by rememberSaveable { mutableStateOf(deal.opponents) }
+    var contract by rememberSaveable { mutableStateOf(deal.contract) }
+    var declarer by rememberSaveable { mutableStateOf(deal.declarer) }
+    var result by rememberSaveable { mutableStateOf(deal.result) }
+    var score by rememberSaveable { mutableStateOf(deal.score) }
+    var notes by rememberSaveable { mutableStateOf(deal.notes) }
 
     // Add these lists for the dropdown options
     val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
@@ -59,17 +60,15 @@ fun EditDealScreen(
     val declarers = listOf("North", "East", "South", "West")
 
     // Split the contract into components
-    var contractLevel by remember { 
+    var contractLevel by rememberSaveable {
         mutableStateOf(if (deal.contract == PASSED_OUT) PASSED_OUT else deal.contract.firstOrNull()?.toString() ?: "1")
     }
-    var contractSuit by remember { 
+    var contractSuit by rememberSaveable {
         mutableStateOf(if (deal.contract == PASSED_OUT) "" else deal.contract.substring(1).takeWhile { !it.isWhitespace() })
     }
-    var contractDouble by remember { 
+    var contractDouble by rememberSaveable {
         mutableStateOf(if (deal.contract == PASSED_OUT) "" else deal.contract.substringAfterLast(" ", "-"))
     }
-
-    var isPassedOut by remember { mutableStateOf(deal.contract == PASSED_OUT) }
 
     Scaffold(
         topBar = {
@@ -136,7 +135,7 @@ fun EditDealScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                var levelExpanded by remember { mutableStateOf(false) }
+                var levelExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = levelExpanded,
                     onExpandedChange = { levelExpanded = !levelExpanded },
@@ -171,7 +170,7 @@ fun EditDealScreen(
                     }
                 }
 
-                var suitExpanded by remember { mutableStateOf(false) }
+                var suitExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = suitExpanded,
                     onExpandedChange = { if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded },
@@ -206,7 +205,7 @@ fun EditDealScreen(
                     }
                 }
 
-                var doubleExpanded by remember { mutableStateOf(false) }
+                var doubleExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = doubleExpanded,
                     onExpandedChange = { if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded },
@@ -242,7 +241,7 @@ fun EditDealScreen(
                 }
             }
 
-            var declarerExpanded by remember { mutableStateOf(false) }
+            var declarerExpanded by rememberSaveable { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = declarerExpanded,
                 onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },

@@ -14,7 +14,7 @@ import androidx.compose.material.icons.filled.Check
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.bridge.notes.R
 import com.bridge.notes.model.Deal
 import com.bridge.notes.model.TournamentViewModel
@@ -28,18 +28,17 @@ fun CreateDealScreen(
     onNavigateBack: () -> Unit,
     viewModel: TournamentViewModel
 ) {
-    var dealNumber by remember { mutableStateOf("") }
-    var opponents by remember { mutableStateOf("") }
-    var contract by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf("") }
-    var score by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var dealNumber by rememberSaveable { mutableStateOf("") }
+    var opponents by rememberSaveable { mutableStateOf("") }
+    var contract by rememberSaveable { mutableStateOf("") }
+    var result by rememberSaveable { mutableStateOf("") }
+    var score by rememberSaveable { mutableStateOf("") }
+    var notes by rememberSaveable { mutableStateOf("") }
 
     // Add these state variables for contract components
-    var contractLevel by remember { mutableStateOf("1") }
-    var contractSuit by remember { mutableStateOf("") }
-    var contractDouble by remember { mutableStateOf("-") }
-    var isPassedOut by remember { mutableStateOf(false) }
+    var contractLevel by rememberSaveable { mutableStateOf("1") }
+    var contractSuit by rememberSaveable { mutableStateOf("") }
+    var contractDouble by rememberSaveable { mutableStateOf("-") }
 
     // Add these lists for the dropdown options
     val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
@@ -52,10 +51,10 @@ fun CreateDealScreen(
     val scope = rememberCoroutineScope()
 
     // Add state tracking for the new deal
-    var createdDealId by remember { mutableStateOf<Long?>(null) }
+    var createdDealId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     // Change declarer state to initialize with first option
-    var declarer by remember { mutableStateOf(declarers[0]) }
+    var declarer by rememberSaveable { mutableStateOf(declarers[0]) }
 
     // Add effect to monitor deal creation
     LaunchedEffect(createdDealId) {
@@ -143,7 +142,7 @@ fun CreateDealScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                var levelExpanded by remember { mutableStateOf(false) }
+                var levelExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = levelExpanded,
                     onExpandedChange = { levelExpanded = !levelExpanded },
@@ -178,7 +177,7 @@ fun CreateDealScreen(
                     }
                 }
 
-                var suitExpanded by remember { mutableStateOf(false) }
+                var suitExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = suitExpanded,
                     onExpandedChange = { if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded },
@@ -212,7 +211,7 @@ fun CreateDealScreen(
                     }
                 }
 
-                var doubleExpanded by remember { mutableStateOf(false) }
+                var doubleExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = doubleExpanded,
                     onExpandedChange = { if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded },
@@ -247,7 +246,7 @@ fun CreateDealScreen(
                 }
             }
             
-            var declarerExpanded by remember { mutableStateOf(false) }
+            var declarerExpanded by rememberSaveable { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = declarerExpanded,
                 onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },

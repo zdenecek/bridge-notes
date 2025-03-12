@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,12 +53,12 @@ fun EditTournamentScreen(
         .let { remember(it) { mutableStateOf(it) } }
     
     // State for form fields
-    var name by remember(tournament) { mutableStateOf(tournament?.name ?: "") }
-    var date by remember(tournament) { mutableStateOf(tournament?.date ?: LocalDateTime.now()) }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var resultsLink by remember(tournament) { mutableStateOf(tournament?.resultsLink ?: "") }
-    var pairOrTeam by remember(tournament) { mutableStateOf(tournament?.pairOrTeam ?: "") }
-    var note by remember(tournament) { mutableStateOf(tournament?.note ?: "") }
+    var name by rememberSaveable(tournament) { mutableStateOf(tournament?.name ?: "") }
+    var date by rememberSaveable(tournament) { mutableStateOf(tournament?.date ?: LocalDateTime.now()) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
+    var resultsLink by rememberSaveable(tournament) { mutableStateOf(tournament?.resultsLink ?: "") }
+    var pairOrTeam by rememberSaveable(tournament) { mutableStateOf(tournament?.pairOrTeam ?: "") }
+    var note by rememberSaveable(tournament) { mutableStateOf(tournament?.note ?: "") }
 
     if (showDatePicker)     {
         val datePickerState = rememberDatePickerState(

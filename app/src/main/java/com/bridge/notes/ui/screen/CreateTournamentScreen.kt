@@ -15,7 +15,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,6 +33,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.bridge.notes.R
 import com.bridge.notes.model.Tournament
 import com.bridge.notes.model.TournamentViewModel
@@ -49,12 +49,12 @@ fun CreateTournamentScreen(
     viewModel: TournamentViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    var name by remember { mutableStateOf("") }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var date by remember { mutableStateOf(LocalDateTime.now()) }
-    var resultsLink by remember { mutableStateOf("") }
-    var pairTeam by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
+    var date by rememberSaveable { mutableStateOf(LocalDateTime.now()) }
+    var resultsLink by rememberSaveable { mutableStateOf("") }
+    var pairTeam by rememberSaveable { mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier
@@ -114,7 +114,7 @@ fun CreateTournamentScreen(
                     initialSelectedDateMillis = date.atZone(ZoneId.systemDefault())
                         .toInstant().toEpochMilli()
                 )
-                val customFormatter = remember { CustomDateFormatter() }
+                val customFormatter = rememberSaveable { CustomDateFormatter() }
 
                 DatePickerDialog(
                     onDismissRequest = { showDatePicker = false },
