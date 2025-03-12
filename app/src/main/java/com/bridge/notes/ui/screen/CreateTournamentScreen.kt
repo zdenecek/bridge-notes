@@ -35,6 +35,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.bridge.notes.R
 import com.bridge.notes.model.Tournament
@@ -119,7 +120,7 @@ fun CreateTournamentScreen(
                     initialSelectedDateMillis = date.atZone(ZoneId.systemDefault())
                         .toInstant().toEpochMilli()
                 )
-                val customFormatter = rememberSaveable { CustomDateFormatter() }
+                val customFormatter = remember { CustomDateFormatter() }
 
                 DatePickerDialog(
                     onDismissRequest = { showDatePicker = false },
