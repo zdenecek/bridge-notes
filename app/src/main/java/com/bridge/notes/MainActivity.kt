@@ -4,13 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.navigation.navArgument
-import com.bridge.notes.model.TournamentViewModel
+import com.bridge.notes.model.TournamentListViewModel
+import com.bridge.notes.model.TournamentDetailsViewModel
+import com.bridge.notes.model.DealViewModel
 import com.bridge.notes.model.TournamentViewModelFactory
 import com.bridge.notes.ui.screen.CreateDealScreen
 import com.bridge.notes.ui.screen.CreateTournamentScreen
@@ -21,13 +24,14 @@ import com.bridge.notes.ui.screen.TournamentDetailsScreen
 import com.bridge.notes.ui.screen.TournamentListScreen
 import com.bridge.notes.ui.theme.BridgeNotesTheme
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: TournamentViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+    private val tournamentListViewModel: TournamentListViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (BuildConfig.INSERT_DEMO_DATA){
-            viewModel.insertDemoData()
+        if (BuildConfig.INSERT_DEMO_DATA) {
+            tournamentListViewModel.insertDemoData()
         }
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,7 +40,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = TournamentListScreenObj) {
                     composable<TournamentListScreenObj> {
                         TournamentListScreen(
-                            viewModel = viewModel,  // Pass the activity-level viewModel
+                            viewModel = tournamentListViewModel,
                             showTournamentDetail = { tournamentId ->
                                 navController.navigate(
                                     TournamentDetailsScreenParams(tournamentId)
@@ -49,6 +53,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<TournamentDetailsScreenParams> {
                         val args = it.toRoute<TournamentDetailsScreenParams>()
+                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        LaunchedEffect(args.id) {
+                            tournamentDetailsViewModel.loadTournament(args.id)
+                        }
                         TournamentDetailsScreen(
                             tournamentId = args.id,
                             onNavigateUp = { navController.navigateUp() },
@@ -63,7 +71,7 @@ class MainActivity : ComponentActivity() {
                             onShowDealDetail = { dealId ->
                                 navController.navigate("tournament/${args.id}/deal/$dealId")
                             },
-                            viewModel = viewModel  // Pass the activity-level viewModel
+                            viewModel = tournamentDetailsViewModel
                         )
                     }
                     composable(
@@ -72,10 +80,11 @@ class MainActivity : ComponentActivity() {
                             navArgument("tournamentId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
+                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
                         CreateDealScreen(
                             tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = viewModel  // Pass the activity-level viewModel
+                            viewModel = dealViewModel
                         )
                     }
                     composable(
@@ -85,16 +94,20 @@ class MainActivity : ComponentActivity() {
                             navArgument("dealId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
+                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
+                        val dealId = backStackEntry.arguments?.getLong("dealId") ?: 0L
+                        LaunchedEffect(tournamentId, dealId) {
+                            dealViewModel.loadDeal(tournamentId, dealId)
+                        }
                         DealDetailScreen(
-                            dealId = backStackEntry.arguments?.getLong("dealId") ?: 0L,
-                            tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L,
+                            dealId = dealId,
+                            tournamentId = tournamentId,
                             onNavigateBack = { navController.navigateUp() },
-                            onEdit = { 
-                                val tId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
-                                val dId = backStackEntry.arguments?.getLong("dealId") ?: 0L
-                                navController.navigate("tournament/$tId/deal/$dId/edit") 
+                            onEdit = {
+                                navController.navigate("tournament/$tournamentId/deal/$dealId/edit")
                             },
-                            viewModel = viewModel  // Pass the activity-level viewModel
+                            viewModel = dealViewModel
                         )
                     }
                     composable(
@@ -104,12 +117,17 @@ class MainActivity : ComponentActivity() {
                             navArgument("dealId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
+                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
                         val dealId = backStackEntry.arguments?.getLong("dealId") ?: 0L
+                        LaunchedEffect(tournamentId, dealId) {
+                            dealViewModel.loadDeal(tournamentId, dealId)
+                        }
                         EditDealScreen(
                             dealId = dealId,
-                            tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L,
+                            tournamentId = tournamentId,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = viewModel  // Pass the activity-level viewModel
+                            viewModel = dealViewModel
                         )
                     }
                     composable(
@@ -118,16 +136,22 @@ class MainActivity : ComponentActivity() {
                             navArgument("tournamentId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
+                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
+                        LaunchedEffect(tournamentId) {
+                            tournamentDetailsViewModel.loadTournament(tournamentId)
+                        }
                         EditTournamentScreen(
-                            tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L,
+                            tournamentId = tournamentId,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = viewModel
+                            viewModel = tournamentDetailsViewModel
                         )
                     }
                     composable("create_tournament") {
+                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
                         CreateTournamentScreen(
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = viewModel
+                            viewModel = tournamentDetailsViewModel
                         )
                     }
                 }
