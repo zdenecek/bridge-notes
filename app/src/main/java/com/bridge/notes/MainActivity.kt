@@ -11,10 +11,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.navigation.navArgument
+import com.bridge.notes.model.CreateDealViewModel
+import com.bridge.notes.model.CreateTournamentViewModel
+import com.bridge.notes.model.DealDetailViewModel
 import com.bridge.notes.model.TournamentListViewModel
 import com.bridge.notes.model.TournamentDetailsViewModel
-import com.bridge.notes.model.DealViewModel
-import com.bridge.notes.model.TournamentViewModelFactory
+import com.bridge.notes.model.EditDealViewModel
+import com.bridge.notes.model.EditTournamentViewModel
+import com.bridge.notes.model.ViewModelFactory
 import com.bridge.notes.ui.screen.CreateDealScreen
 import com.bridge.notes.ui.screen.CreateTournamentScreen
 import com.bridge.notes.ui.screen.DealDetailScreen
@@ -24,10 +28,13 @@ import com.bridge.notes.ui.screen.TournamentDetailsScreen
 import com.bridge.notes.ui.screen.TournamentListScreen
 import com.bridge.notes.ui.theme.BridgeNotesTheme
 import kotlinx.serialization.Serializable
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    private val tournamentListViewModel: TournamentListViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+    private val tournamentListViewModel: TournamentListViewModel by viewModels {
+        ViewModelFactory(
+            applicationContext
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.INSERT_DEMO_DATA) {
@@ -53,7 +60,11 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<TournamentDetailsScreenParams> {
                         val args = it.toRoute<TournamentDetailsScreenParams>()
-                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         LaunchedEffect(args.id) {
                             tournamentDetailsViewModel.loadTournament(args.id)
                         }
@@ -80,11 +91,15 @@ class MainActivity : ComponentActivity() {
                             navArgument("tournamentId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
-                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val viewModel: CreateDealViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         CreateDealScreen(
                             tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = dealViewModel
+                            viewModel = viewModel
                         )
                     }
                     composable(
@@ -94,11 +109,15 @@ class MainActivity : ComponentActivity() {
                             navArgument("dealId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
-                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val viewModel: DealDetailViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
                         val dealId = backStackEntry.arguments?.getLong("dealId") ?: 0L
                         LaunchedEffect(tournamentId, dealId) {
-                            dealViewModel.loadDeal(tournamentId, dealId)
+                            viewModel.loadDeal(tournamentId, dealId)
                         }
                         DealDetailScreen(
                             dealId = dealId,
@@ -107,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             onEdit = {
                                 navController.navigate("tournament/$tournamentId/deal/$dealId/edit")
                             },
-                            viewModel = dealViewModel
+                            viewModel = viewModel
                         )
                     }
                     composable(
@@ -117,17 +136,21 @@ class MainActivity : ComponentActivity() {
                             navArgument("dealId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
-                        val dealViewModel: DealViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val viewModel: EditDealViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
                         val dealId = backStackEntry.arguments?.getLong("dealId") ?: 0L
                         LaunchedEffect(tournamentId, dealId) {
-                            dealViewModel.loadDeal(tournamentId, dealId)
+                            viewModel.loadDeal(tournamentId, dealId)
                         }
                         EditDealScreen(
                             dealId = dealId,
                             tournamentId = tournamentId,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = dealViewModel
+                            viewModel = viewModel
                         )
                     }
                     composable(
@@ -136,22 +159,30 @@ class MainActivity : ComponentActivity() {
                             navArgument("tournamentId") { type = NavType.LongType }
                         )
                     ) { backStackEntry ->
-                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val viewModel: EditTournamentViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         val tournamentId = backStackEntry.arguments?.getLong("tournamentId") ?: 0L
                         LaunchedEffect(tournamentId) {
-                            tournamentDetailsViewModel.loadTournament(tournamentId)
+                            viewModel.loadTournament(tournamentId)
                         }
                         EditTournamentScreen(
                             tournamentId = tournamentId,
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = tournamentDetailsViewModel
+                            viewModel = viewModel
                         )
                     }
                     composable("create_tournament") {
-                        val tournamentDetailsViewModel: TournamentDetailsViewModel by viewModels { TournamentViewModelFactory(applicationContext) }
+                        val viewModel: CreateTournamentViewModel by viewModels {
+                            ViewModelFactory(
+                                applicationContext
+                            )
+                        }
                         CreateTournamentScreen(
                             onNavigateBack = { navController.navigateUp() },
-                            viewModel = tournamentDetailsViewModel
+                            viewModel = viewModel
                         )
                     }
                 }

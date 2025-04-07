@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DealViewModel(
+class EditDealViewModel(
     private val repository: DataRepository
 ) : ViewModel() {
 
@@ -27,23 +27,9 @@ class DealViewModel(
         }
     }
 
-    fun createDeal(deal: Deal) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            repository.createDeal(deal)
-            _isLoading.value = false
-        }
-    }
-
     fun updateDeal(deal: Deal) {
         viewModelScope.launch {
             repository.updateDeal(deal)
         }
     }
-
-    fun deleteDeal(deal: Deal) {
-        viewModelScope.launch {
-            repository.deleteDeal(deal)
-        }
-    }
-} 
+}

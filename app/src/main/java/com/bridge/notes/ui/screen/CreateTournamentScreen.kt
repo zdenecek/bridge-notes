@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.bridge.notes.R
+import com.bridge.notes.model.CreateTournamentViewModel
 import com.bridge.notes.model.Tournament
 import com.bridge.notes.model.TournamentDetailsViewModel
 import java.time.LocalDateTime
@@ -24,7 +25,7 @@ import java.time.Instant
 @Composable
 fun CreateTournamentScreen(
     onNavigateBack: () -> Unit,
-    viewModel: TournamentDetailsViewModel
+    viewModel: CreateTournamentViewModel
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var date by rememberSaveable { mutableStateOf(LocalDateTime.now()) }

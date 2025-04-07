@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TournamentDetailsViewModel(
+class EditTournamentViewModel(
     private val repository: DataRepository
 ) : ViewModel() {
 
@@ -27,10 +27,9 @@ class TournamentDetailsViewModel(
         }
     }
 
-    fun deleteTournament(tournament: Tournament) {
+    fun updateTournament(tournament: Tournament) {
         viewModelScope.launch {
-            repository.deleteTournament(tournament)
+            repository.updateTournament(tournament)
         }
     }
-
-} 
+}

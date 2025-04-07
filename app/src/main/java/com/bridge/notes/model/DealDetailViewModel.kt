@@ -8,29 +8,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TournamentDetailsViewModel(
+class DealDetailViewModel(
     private val repository: DataRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _currentTournament = MutableStateFlow<Tournament?>(null)
-    val currentTournament: StateFlow<Tournament?> = _currentTournament.asStateFlow()
+    private val _currentDeal = MutableStateFlow<Deal?>(null)
+    val currentDeal: StateFlow<Deal?> = _currentDeal.asStateFlow()
 
-    fun loadTournament(tournamentId: Long) {
+    fun loadDeal(tournamentId: Long, dealId: Long) {
         viewModelScope.launch {
             _isLoading.value = true
             val tournament = repository.getTournament(tournamentId)
-            _currentTournament.value = tournament
+            _currentDeal.value = tournament?.deals?.find { it.id == dealId }
             _isLoading.value = false
         }
     }
 
-    fun deleteTournament(tournament: Tournament) {
+    fun deleteDeal(deal: Deal) {
         viewModelScope.launch {
-            repository.deleteTournament(tournament)
+            repository.deleteDeal(deal)
         }
     }
-
-} 
+}

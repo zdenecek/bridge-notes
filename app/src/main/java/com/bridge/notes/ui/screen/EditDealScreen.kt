@@ -2,21 +2,21 @@ package com.bridge.notes.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import com.bridge.notes.R
-import com.bridge.notes.model.DealViewModel
+import com.bridge.notes.model.EditDealViewModel
 
 private const val PASSED_OUT = "PASSED OUT"
 
@@ -26,36 +26,62 @@ fun EditDealScreen(
     dealId: Long,
     tournamentId: Long,
     onNavigateBack: () -> Unit,
-    viewModel: DealViewModel
+    viewModel: EditDealViewModel
 ) {
     val deal by viewModel.currentDeal.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(dealId, tournamentId) {
         viewModel.loadDeal(tournamentId, dealId)
     }
 
-    var dealNumber by rememberSaveable { mutableStateOf(deal?.dealNumber ?: "") }
-    var opponents by rememberSaveable { mutableStateOf(deal?.opponents ?: "") }
-    var contract by rememberSaveable { mutableStateOf(deal?.contract ?: "") }
-    var result by rememberSaveable { mutableStateOf(deal?.result ?: "") }
-    var score by rememberSaveable { mutableStateOf(deal?.score ?: "") }
-    var notes by rememberSaveable { mutableStateOf(deal?.notes ?: "") }
+    if (deal == null) {
+        LaunchedEffect(Unit) { onNavigateBack() }
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "Error: Deal not found",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        return
+    }
 
-    // Add these state variables for contract components
-    var contractLevel by rememberSaveable { mutableStateOf("1") }
-    var contractSuit by rememberSaveable { mutableStateOf("") }
-    var contractDouble by rememberSaveable { mutableStateOf("-") }
+    val safeDeal = deal!!
 
-    // Add these lists for the dropdown options
+    var dealNumber by rememberSaveable { mutableStateOf(safeDeal.dealNumber) }
+    var opponents by rememberSaveable { mutableStateOf(safeDeal.opponents) }
+    var contract by rememberSaveable { mutableStateOf(safeDeal.contract) }
+    var declarer by rememberSaveable { mutableStateOf(safeDeal.declarer) }
+    var result by rememberSaveable { mutableStateOf(safeDeal.result) }
+    var score by rememberSaveable { mutableStateOf(safeDeal.score) }
+    var notes by rememberSaveable { mutableStateOf(safeDeal.notes) }
+
+    // Dropdown options
     val levels = listOf(PASSED_OUT) + (1..7).map { it.toString() }
     val suits = listOf("♠", "♥", "♦", "♣", "NT")
     val doubles = listOf("-", "X", "XX")
     val declarers = listOf("North", "East", "South", "West")
 
-    // Change declarer state to initialize with first option
-    var declarer by rememberSaveable { mutableStateOf(declarers[0]) }
+    // Split the contract into components
+    var contractLevel by rememberSaveable {
+        mutableStateOf(
+            if (safeDeal.contract == PASSED_OUT) PASSED_OUT
+            else safeDeal.contract.firstOrNull()?.toString() ?: "1"
+        )
+    }
+    var contractSuit by rememberSaveable {
+        mutableStateOf(
+            if (safeDeal.contract == PASSED_OUT) ""
+            else safeDeal.contract.substring(1).takeWhile { !it.isWhitespace() }
+        )
+    }
+    var contractDouble by rememberSaveable {
+        mutableStateOf(
+            if (safeDeal.contract == PASSED_OUT) ""
+            else safeDeal.contract.substringAfterLast(" ", "-")
+        )
+    }
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         topBar = {
@@ -64,15 +90,17 @@ fun EditDealScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
+                scrollBehavior = scrollBehavior,
                 actions = {
-                    IconButton(
-                        onClick = {
-                            val updatedDeal = deal?.copy(
+                    IconButton(onClick = {
+                        // Save deal changes using safeDeal
+                        viewModel.updateDeal(
+                            safeDeal.copy(
                                 dealNumber = dealNumber,
                                 opponents = opponents,
                                 contract = contract,
@@ -81,106 +109,204 @@ fun EditDealScreen(
                                 score = score,
                                 notes = notes
                             )
-                            if (updatedDeal != null) {
-                                viewModel.updateDeal(updatedDeal)
-                            }
-                            onNavigateBack()
-                        }
-                    ) {
+                        )
+                        onNavigateBack()
+                    }) {
                         Icon(
-                            Icons.Default.Check,
+                            imageVector = Icons.Default.Check,
                             contentDescription = stringResource(R.string.save)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
-    ) { padding ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = dealNumber,
+                onValueChange = { dealNumber = it },
+                label = { Text(stringResource(R.string.deal_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            OutlinedTextField(
+                value = opponents,
+                onValueChange = { opponents = it },
+                label = { Text(stringResource(R.string.opponents)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                OutlinedTextField(
-                    value = dealNumber,
-                    onValueChange = { dealNumber = it },
-                    label = { Text(stringResource(R.string.deal_number)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = opponents,
-                    onValueChange = { opponents = it },
-                    label = { Text(stringResource(R.string.opponents)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                var levelExpanded by rememberSaveable { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = levelExpanded,
+                    onExpandedChange = { levelExpanded = !levelExpanded },
+                    modifier = Modifier.weight(1f)
                 ) {
                     OutlinedTextField(
                         value = contractLevel,
-                        onValueChange = { contractLevel = it },
+                        onValueChange = {},
+                        readOnly = true,
                         label = { Text("Level") },
-                        modifier = Modifier.weight(1f)
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
+                        modifier = Modifier.menuAnchor()
                     )
+                    ExposedDropdownMenu(
+                        expanded = levelExpanded,
+                        onDismissRequest = { levelExpanded = false }
+                    ) {
+                        levels.forEach { level ->
+                            DropdownMenuItem(
+                                text = { Text(level) },
+                                onClick = {
+                                    contractLevel = level
+                                    contract = if (level == PASSED_OUT) {
+                                        PASSED_OUT
+                                    } else {
+                                        "$level$contractSuit $contractDouble"
+                                    }
+                                    levelExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                var suitExpanded by rememberSaveable { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = suitExpanded,
+                    onExpandedChange = { if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
                     OutlinedTextField(
                         value = contractSuit,
-                        onValueChange = { contractSuit = it },
+                        onValueChange = {},
+                        readOnly = true,
                         label = { Text("Suit") },
-                        modifier = Modifier.weight(1f)
+                        enabled = contractLevel != PASSED_OUT,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = suitExpanded) },
+                        modifier = Modifier.menuAnchor()
                     )
+                    ExposedDropdownMenu(
+                        expanded = suitExpanded,
+                        onDismissRequest = { suitExpanded = false }
+                    ) {
+                        suits.forEach { suit ->
+                            DropdownMenuItem(
+                                text = { Text(suit) },
+                                onClick = {
+                                    contractSuit = suit
+                                    if (contractLevel != PASSED_OUT) {
+                                        contract = "$contractLevel$contractSuit $contractDouble"
+                                    }
+                                    suitExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                var doubleExpanded by rememberSaveable { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = doubleExpanded,
+                    onExpandedChange = { if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
                     OutlinedTextField(
                         value = contractDouble,
-                        onValueChange = { contractDouble = it },
+                        onValueChange = {},
+                        readOnly = true,
                         label = { Text("Double") },
-                        modifier = Modifier.weight(1f)
+                        enabled = contractLevel != PASSED_OUT,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = doubleExpanded) },
+                        modifier = Modifier.menuAnchor()
                     )
+                    ExposedDropdownMenu(
+                        expanded = doubleExpanded,
+                        onDismissRequest = { doubleExpanded = false }
+                    ) {
+                        doubles.forEach { double ->
+                            DropdownMenuItem(
+                                text = { Text(double) },
+                                onClick = {
+                                    contractDouble = double
+                                    if (contractLevel != PASSED_OUT) {
+                                        contract = "$contractLevel$contractSuit $double"
+                                    }
+                                    doubleExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            var declarerExpanded by rememberSaveable { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = declarerExpanded,
+                onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
                     value = declarer,
-                    onValueChange = { declarer = it },
+                    onValueChange = {},
+                    readOnly = true,
                     label = { Text(stringResource(R.string.declarer)) },
-                    modifier = Modifier.fillMaxWidth()
+                    enabled = contractLevel != PASSED_OUT,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = declarerExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = result,
-                    onValueChange = { result = it },
-                    label = { Text(stringResource(R.string.result)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = score,
-                    onValueChange = { score = it },
-                    label = { Text(stringResource(R.string.score)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = notes,
-                    onValueChange = { notes = it },
-                    label = { Text(stringResource(R.string.notes)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                ExposedDropdownMenu(
+                    expanded = declarerExpanded,
+                    onDismissRequest = { declarerExpanded = false }
+                ) {
+                    declarers.forEach { direction ->
+                        DropdownMenuItem(
+                            text = { Text(direction) },
+                            onClick = {
+                                declarer = direction
+                                declarerExpanded = false
+                            }
+                        )
+                    }
+                }
             }
+
+            OutlinedTextField(
+                value = result,
+                onValueChange = { result = it },
+                label = { Text(stringResource(R.string.result)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = score,
+                onValueChange = { score = it },
+                label = { Text(stringResource(R.string.score)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            OutlinedTextField(
+                value = notes,
+                onValueChange = { notes = it },
+                label = { Text(stringResource(R.string.notes)) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3
+            )
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.bridge.notes.R
+import com.bridge.notes.model.EditTournamentViewModel
 import com.bridge.notes.model.TournamentDetailsViewModel
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,7 +26,7 @@ import java.time.Instant
 fun EditTournamentScreen(
     tournamentId: Long,
     onNavigateBack: () -> Unit,
-    viewModel: TournamentDetailsViewModel
+    viewModel: EditTournamentViewModel
 ) {
     val tournament by viewModel.currentTournament.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
