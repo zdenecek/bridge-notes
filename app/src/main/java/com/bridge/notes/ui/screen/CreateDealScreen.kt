@@ -19,8 +19,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.bridge.notes.R
+import com.bridge.notes.model.CreateDealViewModel
 import com.bridge.notes.model.Deal
-import com.bridge.notes.model.TournamentViewModel
 
 private const val PASSED_OUT = "PASSED OUT"
 
@@ -29,7 +29,7 @@ private const val PASSED_OUT = "PASSED OUT"
 fun CreateDealScreen(
     tournamentId: Long,
     onNavigateBack: () -> Unit,
-    viewModel: TournamentViewModel
+    viewModel: CreateDealViewModel
 ) {
     var dealNumber by rememberSaveable { mutableStateOf("") }
     var opponents by rememberSaveable { mutableStateOf("") }
@@ -49,8 +49,6 @@ fun CreateDealScreen(
     val doubles = listOf("-", "X", "XX")
     val declarers = listOf("North", "East", "South", "West")
 
-    val tournaments by viewModel.tournaments.collectAsState()
-    val tournament = tournaments.find { it.id == tournamentId }
     val scope = rememberCoroutineScope()
 
     // Add state tracking for the new deal
@@ -69,16 +67,23 @@ fun CreateDealScreen(
     }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
+    var tournamentName by remember { mutableStateOf("") }
+
+    LaunchedEffect(tournamentId) {
+        tournamentName = viewModel.getTournamentName(tournamentId) ?: ""
+    }
     Scaffold(
-        modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.new_deal)) },
+                title = { Text(stringResource(R.string.create_deal)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
@@ -96,18 +101,18 @@ fun CreateDealScreen(
                                 score = score,
                                 notes = notes
                             )
-                            
+
                             scope.launch {
                                 println("Creating new deal: ${newDeal.id}")
-                                viewModel.createDeal(tournamentId, newDeal)
-                                createdDealId = newDeal.id // Set the ID after creation
+                                viewModel.createDeal(newDeal)
+                                createdDealId = newDeal.id
                             }
                         },
                         enabled = true
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.save_changes)
+                            contentDescription = stringResource(R.string.save)
                         )
                     }
                 }
@@ -123,27 +128,27 @@ fun CreateDealScreen(
         ) {
             // Tournament name (uneditable)
             OutlinedTextField(
-                value = tournament?.name ?: "",
+                value = tournamentName,
                 onValueChange = { },
                 label = { Text(stringResource(R.string.deal_tournament_name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = false
             )
-            
+
             OutlinedTextField(
                 value = dealNumber,
                 onValueChange = { dealNumber = it },
-                label = { Text(stringResource(R.string.deal_number_label)) },
+                label = { Text(stringResource(R.string.deal_number)) },
                 modifier = Modifier.fillMaxWidth(),
             )
-            
+
             OutlinedTextField(
                 value = opponents,
                 onValueChange = { opponents = it },
-                label = { Text(stringResource(R.string.deal_opponents_label)) },
+                label = { Text(stringResource(R.string.opponents)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -170,7 +175,7 @@ fun CreateDealScreen(
                         levels.forEach { level ->
                             DropdownMenuItem(
                                 text = { Text(level) },
-                                onClick = { 
+                                onClick = {
                                     contractLevel = level
                                     contract = if (level == PASSED_OUT) {
                                         PASSED_OUT
@@ -187,7 +192,9 @@ fun CreateDealScreen(
                 var suitExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = suitExpanded,
-                    onExpandedChange = { if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded },
+                    onExpandedChange = {
+                        if (contractLevel != PASSED_OUT) suitExpanded = !suitExpanded
+                    },
                     modifier = Modifier.weight(1f)
                 ) {
                     OutlinedTextField(
@@ -206,7 +213,7 @@ fun CreateDealScreen(
                         suits.forEach { suit ->
                             DropdownMenuItem(
                                 text = { Text(suit) },
-                                onClick = { 
+                                onClick = {
                                     contractSuit = suit
                                     if (contractLevel != PASSED_OUT) {
                                         contract = "$contractLevel$contractSuit $contractDouble"
@@ -221,7 +228,9 @@ fun CreateDealScreen(
                 var doubleExpanded by rememberSaveable { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = doubleExpanded,
-                    onExpandedChange = { if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded },
+                    onExpandedChange = {
+                        if (contractLevel != PASSED_OUT) doubleExpanded = !doubleExpanded
+                    },
                     modifier = Modifier.weight(1f)
                 ) {
                     OutlinedTextField(
@@ -240,7 +249,7 @@ fun CreateDealScreen(
                         doubles.forEach { double ->
                             DropdownMenuItem(
                                 text = { Text(double) },
-                                onClick = { 
+                                onClick = {
                                     contractDouble = double
                                     if (contractLevel != PASSED_OUT) {
                                         contract = "$contractLevel$contractSuit $double"
@@ -252,18 +261,20 @@ fun CreateDealScreen(
                     }
                 }
             }
-            
+
             var declarerExpanded by rememberSaveable { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = declarerExpanded,
-                onExpandedChange = { if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded },
+                onExpandedChange = {
+                    if (contractLevel != PASSED_OUT) declarerExpanded = !declarerExpanded
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
                     value = declarer,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(stringResource(R.string.deal_declarer_label)) },
+                    label = { Text(stringResource(R.string.declarer)) },
                     enabled = contractLevel != PASSED_OUT,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = declarerExpanded) },
                     modifier = Modifier
@@ -277,7 +288,7 @@ fun CreateDealScreen(
                     declarers.forEach { direction ->
                         DropdownMenuItem(
                             text = { Text(direction) },
-                            onClick = { 
+                            onClick = {
                                 declarer = direction
                                 declarerExpanded = false
                             }
@@ -285,26 +296,26 @@ fun CreateDealScreen(
                     }
                 }
             }
-            
+
             OutlinedTextField(
                 value = result,
                 onValueChange = { result = it },
-                label = { Text(stringResource(R.string.deal_result_label)) },
+                label = { Text(stringResource(R.string.result)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             OutlinedTextField(
                 value = score,
                 onValueChange = { score = it },
-                label = { Text(stringResource(R.string.deal_score_label)) },
+                label = { Text(stringResource(R.string.score)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            
+
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text(stringResource(R.string.deal_notes_label)) },
+                label = { Text(stringResource(R.string.notes)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )

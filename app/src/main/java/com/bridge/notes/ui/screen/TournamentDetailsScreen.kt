@@ -3,12 +3,7 @@ package com.bridge.notes.ui.screen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -16,35 +11,19 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import java.time.format.DateTimeFormatter
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import com.bridge.notes.R
 import com.bridge.notes.model.Deal
-import com.bridge.notes.model.TournamentViewModel
-import java.time.format.FormatStyle
+import com.bridge.notes.model.Tournament
+import com.bridge.notes.model.TournamentDetailsViewModel
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,13 +33,15 @@ fun TournamentDetailsScreen(
     onEditTournament: (Long) -> Unit,
     onCreateDeal: () -> Unit,
     onShowDealDetail: (Long) -> Unit,
-    viewModel: TournamentViewModel
+    viewModel: TournamentDetailsViewModel
 ) {
-    val tournament by viewModel.tournaments.collectAsState()
-        .value.find { it.id == tournamentId }
-        .let { remember(it) { mutableStateOf(it) } }
-
+    val tournament by viewModel.currentTournament.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    LaunchedEffect(tournamentId) {
+        viewModel.loadTournament(tournamentId)
+    }
 
     if (showDeleteConfirmation) {
         AlertDialog(
@@ -99,7 +80,7 @@ fun TournamentDetailsScreen(
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
@@ -110,7 +91,7 @@ fun TournamentDetailsScreen(
                             contentDescription = stringResource(R.string.delete_tournament)
                         )
                     }
-                    IconButton(onClick = { tournament?.id?.let { onEditTournament(it) } }) {
+                    IconButton(onClick = { onEditTournament(tournamentId) }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = stringResource(R.string.edit_tournament)
@@ -121,77 +102,72 @@ fun TournamentDetailsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onCreateDeal
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_deal)
-                )
+            FloatingActionButton(onClick = onCreateDeal) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.create_deal))
             }
         }
-    ) { innerPadding ->
-        if (tournament == null) {
+    ) { padding ->
+        if (isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp)
+                    .padding(padding)
             ) {
-                // Tournament details
-                Text(
-                    text = tournament?.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)) ?: "",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                if (!tournament?.resultsLink.isNullOrBlank()) {
-                    val context = LocalContext.current
-                    Text(
-                        text = tournament?.resultsLink ?: "",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable {
-                            tournament?.resultsLink?.let { link ->
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                                context.startActivity(intent)
-                            }
-                        }
+                item {
+                    TournamentInfoCard(tournament)
+                }
+                items(tournament?.deals ?: emptyList()) { deal ->
+                    DealItem(
+                        deal = deal,
+                        onClick = { onShowDealDetail(deal.id) }
                     )
                 }
-                Text(
-                    text = tournament?.pairOrTeam ?: "",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                if (!tournament?.note.isNullOrBlank()) {
-                    Text(
-                        text = tournament?.note ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
+            }
+        }
+    }
+}
 
-                // Deals list
+@Composable
+private fun TournamentInfoCard(tournament: Tournament?) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = tournament?.name ?: "",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = tournament?.date?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) ?: "",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = tournament?.pairOrTeam ?: "",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            if (!tournament?.note.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.deals),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    text = tournament?.note ?: "",
+                    style = MaterialTheme.typography.bodySmall
                 )
-                LazyColumn {
-                    items(tournament?.deals ?: emptyList()) { deal ->
-                        DealItem(
-                            deal = deal,
-                            onClick = { onShowDealDetail(deal.id) }
-                        )
-                    }
-                }
             }
         }
     }
@@ -202,22 +178,43 @@ private fun DealItem(
     deal: Deal,
     onClick: () -> Unit
 ) {
-    Row(
+    Card(
         modifier = Modifier
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable(onClick = onClick)
     ) {
-        Text(
-            text = "#${deal.dealNumber}",
-            Modifier
-                .width(48.dp)
-                .padding(end = 8.dp)
-        )
-        Column {
-            Text(deal.opponents)
-            Text(deal.contract + " " + deal.declarer + " " + deal.result + " " + deal.score)
-            Text(deal.notes)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Deal ${deal.dealNumber}",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Opponents: ${deal.opponents}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Contract: ${deal.contract} by ${deal.declarer}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Result: ${deal.result} (${deal.score})",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            if (deal.notes.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = deal.notes,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
